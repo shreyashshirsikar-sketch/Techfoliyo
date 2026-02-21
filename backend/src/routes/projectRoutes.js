@@ -12,4 +12,4 @@ router.get("/", projectController.getAllProjects);
 router.get("/:id", projectController.getProjectById);
 router.get("/user/:userId", projectController.getProjectsByUser);
 
-module.exports = router;
+module.exports = router; 
