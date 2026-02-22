@@ -286,7 +286,7 @@ function Signup() {
               Create Account
             </button>
 
-            {/* Login Link */}
+            {/* Login Link - CHANGED FROM "/" TO "/login" */}
             <p style={{
               textAlign: "center",
               color: "#6b7280",
@@ -294,7 +294,7 @@ function Signup() {
             }}>
               Already have an account?{' '}
               <a 
-                href="/" 
+                href="/login" 
                 style={{
                   color: "#a855f7",
                   fontWeight: "600",
