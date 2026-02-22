@@ -1,43 +1,118 @@
 const prisma = require("../config/prisma");
 
-exports.createProject = async (req, res) => {
-  try {
-    const { title, description, techStack, githubUrl, liveUrl } = req.body;
 
-    if (!title || !description || !techStack) {
-      return res.status(400).json({ message: "Missing required fields" });
+// ================= CREATE DRAFT =================
+exports.createDraft = async (req, res) => {
+  try {
+    const { title } = req.body;
+
+    if (!title) {
+      return res.status(400).json({ message: "Title required" });
     }
 
     const project = await prisma.project.create({
       data: {
         title,
-        description,
-        techStack,
-        githubUrl,
-        liveUrl,
         userId: req.userId
       }
     });
 
-    res.json({
-      message: "Project created successfully",
-      project
-    });
-
+    res.json(project);
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Server error" });
   }
 };
 
-// GET ALL PROJECTS (feed)
+
+// ================= SAVE SECTION =================
+exports.saveSection = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { type, content } = req.body;
+
+    if (!type || !content)
+      return res.status(400).json({ message: "Type and content required" });
+
+    const section = await prisma.projectSection.upsert({
+      where: {
+        projectId_type: {
+          projectId: id,
+          type
+        }
+      },
+      update: { content },
+      create: {
+        projectId: id,
+        type,
+        content
+      }
+    });
+
+    res.json(section);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+// ================= GET BUILDER DATA =================
+exports.getBuilderProject = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const project = await prisma.project.findUnique({
+      where: { id },
+      include: { sections: true }
+    });
+
+    res.json(project);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+// ================= PUBLISH PROJECT =================
+exports.publishProject = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // check project exists
+    const existing = await prisma.project.findUnique({
+      where: { id }
+    });
+
+    if (!existing)
+      return res.status(404).json({ message: "Project not found" });
+
+    // publish
+    const project = await prisma.project.update({
+      where: { id },
+      data: { isPublished: true }
+    });
+
+    return res.json({
+      message: "Project published successfully",
+      project
+    });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+
+// ================= PUBLIC FEED =================
 exports.getAllProjects = async (req, res) => {
   try {
     const projects = await prisma.project.findMany({
+      where: { isPublished: true },
       include: {
-        user: {
-          select: { id: true, username: true }
-        }
+        user: { select: { id: true, username: true } }
       },
       orderBy: { createdAt: "desc" }
     });
@@ -50,7 +125,7 @@ exports.getAllProjects = async (req, res) => {
 };
 
 
-// GET SINGLE PROJECT
+// ================= SINGLE PROJECT =================
 exports.getProjectById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -58,13 +133,14 @@ exports.getProjectById = async (req, res) => {
     const project = await prisma.project.findUnique({
       where: { id },
       include: {
-        user: {
-          select: { id: true, username: true }
-        }
+        user: { select: { id: true, username: true } },
+        sections: true,
+        projectSkills: { include: { skill: true } }
       }
     });
 
-    if (!project) return res.status(404).json({ message: "Project not found" });
+    if (!project || !project.isPublished)
+      return res.status(404).json({ message: "Project not found" });
 
     res.json(project);
   } catch (err) {
@@ -74,13 +150,13 @@ exports.getProjectById = async (req, res) => {
 };
 
 
-// GET PROJECTS OF A USER (portfolio page)
+// ================= USER PROJECTS =================
 exports.getProjectsByUser = async (req, res) => {
   try {
     const { userId } = req.params;
 
     const projects = await prisma.project.findMany({
-      where: { userId },
+      where: { userId, isPublished: true },
       orderBy: { createdAt: "desc" }
     });
 
@@ -90,4 +166,3 @@ exports.getProjectsByUser = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
