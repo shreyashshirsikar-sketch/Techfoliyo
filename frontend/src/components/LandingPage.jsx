@@ -1,42 +1,26 @@
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
 function LandingPage() {
   const navigate = useNavigate();
-  const [scrollY, setScrollY] = useState(0);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [activeIndex, setActiveIndex] = useState(null);
-  const cursorRef = useRef(null);
-  const sectionsRef = useRef([]);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
 
   useEffect(() => {
+    let ticking = false;
+    
     const handleScroll = () => {
-      setScrollY(window.scrollY);
-      
-      // Parallax effect for sections
-      sectionsRef.current.forEach((section, index) => {
-        if (section) {
-          const speed = 0.1;
-          const yPos = -(window.scrollY * speed * (index % 2 === 0 ? 1 : -1));
-          section.style.transform = `translateY(${yPos}px)`;
-        }
-      });
-    };
-
-    const handleMouseMove = (e) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-      if (cursorRef.current) {
-        cursorRef.current.style.transform = `translate(${e.clientX - 4}px, ${e.clientY - 4}px)`;
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setIsScrolled(window.scrollY > 20);
+          ticking = false;
+        });
+        ticking = true;
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
-    window.addEventListener("mousemove", handleMouseMove);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("mousemove", handleMouseMove);
-    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const scrollToSection = (id) => {
@@ -46,8 +30,7 @@ function LandingPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
         * {
           margin: 0;
@@ -56,1456 +39,1069 @@ function LandingPage() {
         }
 
         :root {
-          --blue: #2563EB;
-          --blue-dark: #1E40AF;
-          --blue-light: #60A5FA;
-          --white: #FFFFFF;
-          --white-off: #F8FAFC;
-          --black: #0A0A0A;
-          --black-light: #1A1A1A;
-          --gray: #64748B;
-          --gray-light: #E2E8F0;
+          /* Modern SaaS Color Palette */
+          --primary-50: #EEF2FF;
+          --primary-100: #E0E7FF;
+          --primary-200: #C7D2FE;
+          --primary-300: #A5B4FC;
+          --primary-400: #818CF8;
+          --primary-500: #6366F1;
+          --primary-600: #4F46E5;
+          --primary-700: #4338CA;
+          --primary-800: #3730A3;
+          --primary-900: #312E81;
           
-          /* 10-30-60 Rule */
-          --color-primary: var(--blue);
-          --color-secondary: var(--white);
-          --color-accent: var(--black);
+          /* Neutral Colors */
+          --neutral-50: #F9FAFB;
+          --neutral-100: #F3F4F6;
+          --neutral-200: #E5E7EB;
+          --neutral-300: #D1D5DB;
+          --neutral-400: #9CA3AF;
+          --neutral-500: #6B7280;
+          --neutral-600: #4B5563;
+          --neutral-700: #374151;
+          --neutral-800: #1F2937;
+          --neutral-900: #111827;
           
-          /* Sharp corners */
-          --radius-none: 0px;
-          --border-thin: 1px;
-          --border-thick: 2px;
+          /* Semantic Colors */
+          --success-500: #10B981;
+          --warning-500: #F59E0B;
+          --error-500: #EF4444;
           
           /* Typography */
-          --font-display: 'Archivo', sans-serif;
+          --font-display: 'Plus Jakarta Sans', sans-serif;
           --font-body: 'Inter', sans-serif;
           
-          /* Spacing */
-          --space-xs: 8px;
-          --space-sm: 16px;
-          --space-md: 24px;
-          --space-lg: 48px;
-          --space-xl: 64px;
-          --space-2xl: 96px;
+          /* Shadows */
+          --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+          --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+          --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+          --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+          --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+          --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
         }
 
         body {
           font-family: var(--font-body);
-          background: var(--white-off);
-          color: var(--black);
-          line-height: 1.6;
-          overflow-x: hidden;
-          cursor: none;
+          background: white;
+          color: var(--neutral-900);
+          line-height: 1.5;
+          -webkit-font-smoothing: antialiased;
         }
 
-        /* Custom Cursor */
-        .custom-cursor {
-          width: 8px;
-          height: 8px;
-          background: var(--blue);
-          position: fixed;
-          pointer-events: none;
-          z-index: 9999;
-          mix-blend-mode: difference;
-          transition: transform 0.1s ease;
-        }
-
-        .cursor-trail {
-          position: fixed;
-          width: 40px;
-          height: 40px;
-          border: 1px solid var(--blue);
-          pointer-events: none;
-          z-index: 9998;
-          transition: all 0.15s ease;
-          opacity: 0.3;
-        }
-
-        /* Typography */
-        h1, h2, h3, h4, h5, h6 {
-          font-family: var(--font-display);
-          font-weight: 800;
-          letter-spacing: -0.02em;
-          line-height: 1.2;
-        }
-
-        /* Sharp edges utility */
-        .sharp {
-          border-radius: 0 !important;
-        }
-
-        /* Navigation */
+        /* Modern Navigation */
         .nav {
           position: fixed;
-          top: var(--space-md);
-          left: var(--space-md);
-          right: var(--space-md);
-          background: rgba(255, 255, 255, 0.95);
-          backdrop-filter: blur(10px);
-          border: var(--border-thin) solid var(--gray-light);
-          padding: var(--space-sm) var(--space-lg);
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 50;
+          padding: 1rem 2rem;
+          transition: all 0.3s ease;
+        }
+
+        @media (min-width: 768px) {
+          .nav {
+            padding: 1.25rem 4rem;
+          }
+        }
+
+        .nav-scrolled {
+          background: rgba(255, 255, 255, 0.8);
+          backdrop-filter: blur(12px);
+          border-bottom: 1px solid var(--neutral-200);
+          padding: 0.75rem 2rem;
+        }
+
+        @media (min-width: 768px) {
+          .nav-scrolled {
+            padding: 1rem 4rem;
+          }
+        }
+
+        .nav-container {
+          max-width: 1280px;
+          margin: 0 auto;
           display: flex;
           align-items: center;
           justify-content: space-between;
-          z-index: 100;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .nav.scrolled {
-          background: var(--white);
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
         }
 
         .nav-logo {
           font-family: var(--font-display);
-          font-size: 24px;
-          font-weight: 900;
-          letter-spacing: -0.5px;
-          color: var(--black);
+          font-size: 1.5rem;
+          font-weight: 800;
+          color: var(--neutral-900);
           cursor: pointer;
-          position: relative;
-        }
-
-        .nav-logo::after {
-          content: '';
-          position: absolute;
-          bottom: -4px;
-          left: 0;
-          width: 30%;
-          height: 3px;
-          background: var(--blue);
-          transition: width 0.3s ease;
-        }
-
-        .nav-logo:hover::after {
-          width: 100%;
+          letter-spacing: -0.02em;
         }
 
         .nav-logo span {
-          color: var(--blue);
+          color: var(--primary-600);
+          background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-500) 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
         }
 
         .nav-links {
-          display: flex;
-          gap: var(--space-lg);
+          display: none;
+          gap: 2rem;
+        }
+
+        @media (min-width: 768px) {
+          .nav-links {
+            display: flex;
+          }
         }
 
         .nav-links a {
-          color: var(--black);
+          color: var(--neutral-600);
           text-decoration: none;
-          font-size: 14px;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
+          font-size: 0.9375rem;
+          font-weight: 500;
           cursor: pointer;
-          position: relative;
-          padding: var(--space-xs) 0;
+          transition: color 0.2s;
         }
 
-        .nav-links a::after {
-          content: '';
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          width: 0;
-          height: 2px;
-          background: var(--blue);
-          transition: width 0.2s ease;
+        .nav-links a:hover {
+          color: var(--primary-600);
         }
 
-        .nav-links a:hover::after {
-          width: 100%;
-        }
-
-        .nav-actions {
+        .nav-right {
           display: flex;
-          gap: var(--space-sm);
+          gap: 1rem;
+          align-items: center;
         }
 
-        .btn-outline {
-          padding: var(--space-xs) var(--space-lg);
+        .btn-ghost {
           background: transparent;
-          border: var(--border-thick) solid var(--blue);
-          color: var(--blue);
-          font-size: 14px;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
+          border: none;
+          color: var(--neutral-600);
+          font-size: 0.9375rem;
+          font-weight: 500;
           cursor: pointer;
-          transition: all 0.2s ease;
+          padding: 0.5rem 1rem;
+          transition: color 0.2s;
         }
 
-        .btn-outline:hover {
-          background: var(--blue);
-          color: var(--white);
+        .btn-ghost:hover {
+          color: var(--primary-600);
         }
 
         .btn-primary {
-          padding: var(--space-xs) var(--space-lg);
-          background: var(--black);
-          border: var(--border-thick) solid var(--black);
-          color: var(--white);
-          font-size: 14px;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
+          background: var(--neutral-900);
+          color: white;
+          border: none;
+          padding: 0.5rem 1.25rem;
+          font-size: 0.9375rem;
+          font-weight: 500;
           cursor: pointer;
-          transition: all 0.2s ease;
-          position: relative;
-          overflow: hidden;
-        }
-
-        .btn-primary::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
-          background: var(--blue);
-          transition: left 0.3s ease;
-          z-index: -1;
+          transition: all 0.2s;
         }
 
         .btn-primary:hover {
-          border-color: var(--blue);
-          color: var(--white);
-        }
-
-        .btn-primary:hover::before {
-          left: 0;
+          background: var(--neutral-800);
         }
 
         /* Hero Section */
         .hero {
           min-height: 100vh;
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          position: relative;
-          background: var(--white);
-        }
-
-        .hero-left {
-          padding: var(--space-2xl) var(--space-xl);
           display: flex;
-          flex-direction: column;
-          justify-content: center;
-          position: relative;
-          border-right: var(--border-thin) solid var(--gray-light);
-        }
-
-        .hero-left::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          right: 0;
-          width: 1px;
-          height: 100%;
-          background: linear-gradient(to bottom, transparent, var(--blue), transparent);
-          opacity: 0.5;
-        }
-
-        .hero-label {
-          display: inline-flex;
           align-items: center;
-          gap: var(--space-sm);
-          margin-bottom: var(--space-md);
+          padding: 0 2rem;
+          background: linear-gradient(to bottom, var(--neutral-50), white);
         }
 
-        .hero-label-line {
-          width: 40px;
-          height: 3px;
-          background: var(--blue);
-        }
-
-        .hero-label-text {
-          font-size: 12px;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 2px;
-          color: var(--gray);
-        }
-
-        .hero-title {
-          font-size: clamp(48px, 6vw, 80px);
-          font-weight: 900;
-          line-height: 1;
-          margin-bottom: var(--space-lg);
-          letter-spacing: -0.03em;
-        }
-
-        .hero-title-line {
-          display: block;
-          overflow: hidden;
-        }
-
-        .hero-title-line span {
-          display: block;
-          animation: slideUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-          opacity: 0;
-          transform: translateY(100%);
-        }
-
-        @keyframes slideUp {
-          to {
-            opacity: 1;
-            transform: translateY(0);
+        @media (min-width: 768px) {
+          .hero {
+            padding: 0 4rem;
           }
         }
 
-        .hero-title-line:nth-child(1) span { animation-delay: 0.1s; }
-        .hero-title-line:nth-child(2) span { animation-delay: 0.2s; }
-        .hero-title-line:nth-child(3) span { animation-delay: 0.3s; }
-
-        .hero-title .blue {
-          color: var(--blue);
-          position: relative;
-          display: inline-block;
-        }
-
-        .hero-title .blue::after {
-          content: '';
-          position: absolute;
-          bottom: 10px;
-          left: 0;
-          width: 100%;
-          height: 20%;
-          background: var(--blue);
-          opacity: 0.2;
-          z-index: -1;
-        }
-
-        .hero-subtitle {
-          font-size: 16px;
-          color: var(--gray);
-          max-width: 500px;
-          margin-bottom: var(--space-xl);
-          line-height: 1.8;
-          animation: fadeIn 1s ease 0.6s forwards;
-          opacity: 0;
-        }
-
-        @keyframes fadeIn {
-          to { opacity: 1; }
-        }
-
-        .hero-stats {
-          display: flex;
-          gap: var(--space-xl);
-          margin-bottom: var(--space-xl);
-          animation: fadeIn 1s ease 0.8s forwards;
-          opacity: 0;
-        }
-
-        .stat-item {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .stat-number {
-          font-family: var(--font-display);
-          font-size: 42px;
-          font-weight: 900;
-          color: var(--blue);
-          line-height: 1;
-        }
-
-        .stat-label {
-          font-size: 12px;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-          color: var(--gray);
-          margin-top: var(--space-xs);
-        }
-
-        .hero-cta-group {
-          display: flex;
-          gap: var(--space-md);
-          animation: fadeIn 1s ease 1s forwards;
-          opacity: 0;
-        }
-
-        .btn-large {
-          padding: var(--space-md) var(--space-xl);
-          font-size: 15px;
-        }
-
-        /* Hero Right - Grid System */
-        .hero-right {
-          background: var(--white-off);
-          position: relative;
-          overflow: hidden;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .grid-system {
-          position: relative;
-          width: 100%;
-          height: 100%;
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 2px;
-          background: var(--gray-light);
-          padding: 2px;
-        }
-
-        .grid-item {
-          background: var(--white);
-          aspect-ratio: 1;
-          position: relative;
-          overflow: hidden;
-          cursor: pointer;
-          transition: all 0.3s ease;
-        }
-
-        .grid-item:hover {
-          transform: scale(0.98);
-          background: var(--blue);
-        }
-
-        .grid-item:nth-child(1) { animation: gridFloat 6s ease-in-out infinite; }
-        .grid-item:nth-child(2) { animation: gridFloat 7s ease-in-out infinite 0.5s; }
-        .grid-item:nth-child(3) { animation: gridFloat 8s ease-in-out infinite 1s; }
-        .grid-item:nth-child(4) { animation: gridFloat 5s ease-in-out infinite 1.5s; }
-        .grid-item:nth-child(5) { animation: gridFloat 6.5s ease-in-out infinite 0.2s; }
-        .grid-item:nth-child(6) { animation: gridFloat 7.5s ease-in-out infinite 0.7s; }
-        .grid-item:nth-child(7) { animation: gridFloat 5.5s ease-in-out infinite 1.2s; }
-        .grid-item:nth-child(8) { animation: gridFloat 6s ease-in-out infinite 0.3s; }
-        .grid-item:nth-child(9) { animation: gridFloat 7s ease-in-out infinite 0.8s; }
-
-        @keyframes gridFloat {
-          0%, 100% { transform: translateY(0) rotate(0deg); }
-          50% { transform: translateY(-10px) rotate(1deg); }
-        }
-
-        .grid-content {
-          position: absolute;
-          inset: 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 24px;
-          font-weight: 900;
-          color: var(--black);
-          transition: all 0.3s ease;
-        }
-
-        .grid-item:hover .grid-content {
-          color: var(--white);
-        }
-
-        .grid-overlay {
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(135deg, transparent, rgba(37, 99, 235, 0.1));
-          pointer-events: none;
-        }
-
-        /* Scroll Indicator */
-        .scroll-indicator {
-          position: absolute;
-          bottom: var(--space-lg);
-          left: 50%;
-          transform: translateX(-50%);
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: var(--space-xs);
-          z-index: 10;
-        }
-
-        .scroll-line {
-          width: 1px;
-          height: 60px;
-          background: var(--gray-light);
-          position: relative;
-          overflow: hidden;
-        }
-
-        .scroll-line::after {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: var(--blue);
-          animation: scrollLine 2s ease-in-out infinite;
-        }
-
-        @keyframes scrollLine {
-          0% { transform: translateY(-100%); }
-          50% { transform: translateY(0); }
-          100% { transform: translateY(100%); }
-        }
-
-        .scroll-text {
-          font-size: 10px;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 2px;
-          color: var(--gray);
-          writing-mode: vertical-rl;
-        }
-
-        /* Philosophy Section */
-        .philosophy {
-          padding: var(--space-2xl) var(--space-xl);
-          background: var(--black);
-          color: var(--white);
-          position: relative;
-        }
-
-        .philosophy-grid {
-          max-width: 1200px;
+        .hero-content {
+          max-width: 1280px;
           margin: 0 auto;
+          width: 100%;
           display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: var(--space-xl);
-        }
-
-        .philosophy-block {
-          position: relative;
-          padding: var(--space-lg);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          transition: all 0.3s ease;
-        }
-
-        .philosophy-block:hover {
-          border-color: var(--blue);
-          transform: translateY(-4px);
-        }
-
-        .philosophy-block::before {
-          content: '';
-          position: absolute;
-          top: -1px;
-          left: -1px;
-          width: 0;
-          height: 0;
-          background: linear-gradient(45deg, var(--blue) 50%, transparent 50%);
-          transition: all 0.3s ease;
-          opacity: 0;
-        }
-
-        .philosophy-block:hover::before {
-          width: 20px;
-          height: 20px;
-          opacity: 1;
-        }
-
-        .philosophy-icon {
-          font-size: 42px;
-          margin-bottom: var(--space-md);
-          color: var(--blue);
-        }
-
-        .philosophy-title {
-          font-size: 24px;
-          font-weight: 800;
-          margin-bottom: var(--space-md);
-          letter-spacing: -0.5px;
-        }
-
-        .philosophy-text {
-          color: rgba(255, 255, 255, 0.7);
-          font-size: 15px;
-          line-height: 1.8;
-          margin-bottom: var(--space-lg);
-        }
-
-        .philosophy-link {
-          color: var(--blue);
-          text-decoration: none;
-          font-weight: 600;
-          text-transform: uppercase;
-          font-size: 12px;
-          letter-spacing: 1px;
-          display: inline-flex;
+          grid-template-columns: 1fr;
+          gap: 3rem;
           align-items: center;
-          gap: var(--space-xs);
-          transition: gap 0.3s ease;
+          padding: 6rem 0;
         }
 
-        .philosophy-link:hover {
-          gap: var(--space-md);
+        @media (min-width: 1024px) {
+          .hero-content {
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+          }
+        }
+
+        .hero-left h1 {
+          font-family: var(--font-display);
+          font-size: clamp(2.5rem, 5vw, 3.5rem);
+          font-weight: 800;
+          line-height: 1.1;
+          letter-spacing: -0.02em;
+          color: var(--neutral-900);
+          margin-bottom: 1.5rem;
+        }
+
+        .hero-left p {
+          font-size: 1.125rem;
+          color: var(--neutral-600);
+          margin-bottom: 2rem;
+          max-width: 500px;
+        }
+
+        .hero-badge {
+          display: inline-block;
+          background: var(--primary-50);
+          color: var(--primary-700);
+          font-size: 0.875rem;
+          font-weight: 500;
+          padding: 0.25rem 0.75rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .hero-buttons {
+          display: flex;
+          gap: 1rem;
+          align-items: center;
+          margin-bottom: 2rem;
+        }
+
+        .btn-primary-large {
+          background: var(--neutral-900);
+          color: white;
+          border: none;
+          padding: 0.875rem 2rem;
+          font-size: 1rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .btn-primary-large:hover {
+          background: var(--neutral-800);
+          transform: translateY(-2px);
+          box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary-large {
+          background: transparent;
+          border: 1px solid var(--neutral-200);
+          color: var(--neutral-700);
+          padding: 0.875rem 2rem;
+          font-size: 1rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .btn-secondary-large:hover {
+          background: var(--neutral-50);
+          border-color: var(--neutral-300);
+        }
+
+        .trust-line {
+          font-size: 0.875rem;
+          color: var(--neutral-500);
+          border-top: 1px solid var(--neutral-200);
+          padding-top: 1.5rem;
+        }
+
+        .hero-card {
+          background: white;
+          padding: 2rem;
+          box-shadow: var(--shadow-xl);
+        }
+
+        .project-structure {
+          background: var(--neutral-50);
+        }
+
+        .structure-item {
+          display: flex;
+          gap: 1rem;
+          margin-bottom: 1rem;
+          padding-bottom: 1rem;
+          border-bottom: 1px solid var(--neutral-200);
+        }
+
+        .structure-item:last-child {
+          margin-bottom: 0;
+          padding-bottom: 0;
+          border-bottom: none;
+        }
+
+        .item-label {
+          font-weight: 600;
+          min-width: 100px;
+          color: var(--primary-600);
+          font-size: 0.875rem;
+        }
+
+        .item-value {
+          color: var(--neutral-600);
+          font-size: 0.875rem;
+        }
+
+        /* Section Styles */
+        section {
+          padding: 5rem 2rem;
+        }
+
+        @media (min-width: 768px) {
+          section {
+            padding: 6rem 4rem;
+          }
+        }
+
+        .section-container {
+          max-width: 1280px;
+          margin: 0 auto;
+        }
+
+        .section-header {
+          max-width: 600px;
+          margin-bottom: 3rem;
+        }
+
+        .section-header h2 {
+          font-family: var(--font-display);
+          font-size: clamp(2rem, 4vw, 2.5rem);
+          font-weight: 700;
+          letter-spacing: -0.02em;
+          margin-bottom: 1rem;
+          color: var(--neutral-900);
+        }
+
+        .section-header p {
+          color: var(--neutral-600);
+          font-size: 1.125rem;
+        }
+
+        /* Problem Section */
+        .problem-section {
+          background: white;
+        }
+
+        .problem-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+          margin-bottom: 3rem;
+        }
+
+        @media (min-width: 768px) {
+          .problem-grid {
+            grid-template-columns: repeat(3, 1fr);
+          }
+        }
+
+        .problem-card {
+          background: white;
+          border: 1px solid var(--neutral-200);
+          padding: 2rem;
+          transition: all 0.2s;
+        }
+
+        .problem-card:hover {
+          border-color: var(--primary-200);
+          box-shadow: var(--shadow-lg);
+        }
+
+        .problem-card .icon {
+          font-size: 2rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .problem-card h3 {
+          font-size: 1.125rem;
+          font-weight: 600;
+          margin-bottom: 0.75rem;
+          color: var(--neutral-900);
+        }
+
+        .problem-card p {
+          color: var(--neutral-600);
+          font-size: 0.9375rem;
+          line-height: 1.6;
+        }
+
+        /* Solution Section */
+        .solution-section {
+          background: var(--neutral-50);
+        }
+
+        .solution-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 3rem;
+          align-items: center;
+          margin-top: 2rem;
+        }
+
+        @media (min-width: 1024px) {
+          .solution-grid {
+            grid-template-columns: 1fr 1fr;
+          }
+        }
+
+        .solution-list {
+          list-style: none;
+        }
+
+        .solution-list li {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          margin-bottom: 1rem;
+          font-size: 1rem;
+          color: var(--neutral-700);
+        }
+
+        .solution-list li:before {
+          content: "✓";
+          color: var(--success-500);
+          font-weight: 600;
+          font-size: 1.125rem;
+        }
+
+        .solution-card {
+          background: white;
+          border: 1px solid var(--neutral-200);
+          overflow: hidden;
+          box-shadow: var(--shadow-lg);
+        }
+
+        .solution-card-header {
+          background: var(--neutral-50);
+          padding: 1rem 1.5rem;
+          border-bottom: 1px solid var(--neutral-200);
+          font-weight: 600;
+          color: var(--neutral-900);
+        }
+
+        .solution-card-content {
+          padding: 1.5rem;
         }
 
         /* Features Section */
-        .features {
-          padding: var(--space-2xl) var(--space-xl);
-          background: var(--white);
-        }
-
-        .features-header {
-          max-width: 1200px;
-          margin: 0 auto var(--space-2xl);
-          text-align: center;
-        }
-
-        .features-eyebrow {
-          display: inline-block;
-          font-size: 12px;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 2px;
-          color: var(--blue);
-          margin-bottom: var(--space-sm);
-          position: relative;
-          padding: 0 var(--space-lg);
-        }
-
-        .features-eyebrow::before,
-        .features-eyebrow::after {
-          content: '';
-          position: absolute;
-          top: 50%;
-          width: 30px;
-          height: 2px;
-          background: var(--blue);
-        }
-
-        .features-eyebrow::before {
-          left: 0;
-        }
-
-        .features-eyebrow::after {
-          right: 0;
-        }
-
-        .features-title {
-          font-size: clamp(36px, 5vw, 64px);
-          font-weight: 900;
-          color: var(--black);
-          max-width: 800px;
-          margin: 0 auto;
-          line-height: 1.2;
+        .features-section {
+          background: white;
         }
 
         .features-grid {
-          max-width: 1200px;
-          margin: 0 auto;
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 2px;
-          background: var(--gray-light);
-          padding: 2px;
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+          margin-top: 3rem;
+        }
+
+        @media (min-width: 768px) {
+          .features-grid {
+            grid-template-columns: repeat(3, 1fr);
+          }
         }
 
         .feature-card {
-          background: var(--white);
-          padding: var(--space-xl);
-          position: relative;
-          transition: all 0.3s ease;
-          cursor: pointer;
+          padding: 2rem;
+          background: white;
+          border: 1px solid var(--neutral-200);
+          transition: all 0.2s;
         }
 
         .feature-card:hover {
-          background: var(--blue);
-          transform: translateY(-4px);
+          border-color: var(--primary-200);
+          box-shadow: var(--shadow-lg);
         }
 
-        .feature-card:hover .feature-number,
-        .feature-card:hover .feature-title,
-        .feature-card:hover .feature-desc {
-          color: var(--white);
+        .feature-icon {
+          font-size: 2rem;
+          margin-bottom: 1.5rem;
         }
 
-        .feature-number {
-          font-family: var(--font-display);
-          font-size: 48px;
-          font-weight: 900;
-          color: var(--blue);
-          margin-bottom: var(--space-md);
-          line-height: 1;
-          transition: color 0.3s ease;
-        }
-
-        .feature-title {
-          font-size: 18px;
-          font-weight: 800;
-          margin-bottom: var(--space-sm);
-          letter-spacing: -0.3px;
-          transition: color 0.3s ease;
-        }
-
-        .feature-desc {
-          color: var(--gray);
-          font-size: 14px;
-          line-height: 1.7;
-          transition: color 0.3s ease;
-        }
-
-        /* Showcase Section */
-        .showcase {
-          padding: var(--space-2xl) var(--space-xl);
-          background: var(--white-off);
-        }
-
-        .showcase-grid {
-          max-width: 1200px;
-          margin: 0 auto;
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 2px;
-          background: var(--gray-light);
-          padding: 2px;
-        }
-
-        .showcase-card {
-          background: var(--white);
-          padding: var(--space-xl);
-          position: relative;
-          transition: all 0.3s ease;
-        }
-
-        .showcase-card:hover {
-          background: var(--black);
-        }
-
-        .showcase-card:hover .showcase-category,
-        .showcase-card:hover .showcase-title,
-        .showcase-card:hover .showcase-desc {
-          color: var(--white);
-        }
-
-        .showcase-category {
-          font-size: 12px;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 1px;
-          color: var(--blue);
-          margin-bottom: var(--space-md);
-          transition: color 0.3s ease;
-        }
-
-        .showcase-title {
-          font-size: 28px;
-          font-weight: 800;
-          margin-bottom: var(--space-sm);
-          letter-spacing: -0.5px;
-          transition: color 0.3s ease;
-        }
-
-        .showcase-desc {
-          color: var(--gray);
-          font-size: 15px;
-          line-height: 1.7;
-          margin-bottom: var(--space-lg);
-          transition: color 0.3s ease;
-        }
-
-        .showcase-tech {
-          display: flex;
-          gap: var(--space-xs);
-          flex-wrap: wrap;
-        }
-
-        .tech-tag {
-          padding: var(--space-xs) var(--space-sm);
-          background: var(--white-off);
-          font-size: 11px;
+        .feature-card h3 {
+          font-size: 1.125rem;
           font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-          color: var(--gray);
-          border: 1px solid var(--gray-light);
-          transition: all 0.3s ease;
+          margin-bottom: 1rem;
+          color: var(--neutral-900);
         }
 
-        .showcase-card:hover .tech-tag {
-          background: rgba(255, 255, 255, 0.1);
-          color: var(--white);
-          border-color: rgba(255, 255, 255, 0.2);
+        .feature-card p {
+          color: var(--neutral-600);
+          font-size: 0.9375rem;
+          line-height: 1.6;
         }
 
-        /* Stats Strip */
-        .stats-strip {
+        /* How It Works */
+        .how-it-works {
+          background: var(--neutral-50);
+        }
+
+        .steps-grid {
           display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 2px;
-          background: var(--gray-light);
-          padding: 2px;
-          max-width: 1200px;
-          margin: var(--space-2xl) auto 0;
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+          margin-top: 3rem;
         }
 
-        .stat-block {
-          background: var(--white);
-          padding: var(--space-xl);
+        @media (min-width: 768px) {
+          .steps-grid {
+            grid-template-columns: repeat(3, 1fr);
+          }
+        }
+
+        .step-card {
           text-align: center;
-          transition: all 0.3s ease;
-        }
-
-        .stat-block:hover {
-          background: var(--blue);
-          transform: translateY(-4px);
-        }
-
-        .stat-block:hover .stat-number-large,
-        .stat-block:hover .stat-label-small {
-          color: var(--white);
-        }
-
-        .stat-number-large {
-          font-family: var(--font-display);
-          font-size: 56px;
-          font-weight: 900;
-          color: var(--blue);
-          line-height: 1;
-          margin-bottom: var(--space-xs);
-          transition: color 0.3s ease;
-        }
-
-        .stat-label-small {
-          font-size: 12px;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-          color: var(--gray);
-          transition: color 0.3s ease;
-        }
-
-        /* Core Idea */
-        .core-idea {
-          padding: var(--space-2xl) var(--space-xl);
-          background: var(--black);
-          color: var(--white);
-        }
-
-        .core-container {
-          max-width: 1200px;
-          margin: 0 auto;
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 2px;
-          background: rgba(255, 255, 255, 0.1);
-          padding: 2px;
-        }
-
-        .core-block {
-          background: var(--black);
-          padding: var(--space-xl);
+          padding: 2rem;
+          background: white;
+          border: 1px solid var(--neutral-200);
           position: relative;
-          border: 1px solid transparent;
-          transition: all 0.3s ease;
         }
 
-        .core-block:hover {
-          border-color: var(--blue);
-          transform: translateY(-4px);
+        .step-number {
+          width: 3rem;
+          height: 3rem;
+          background: var(--neutral-900);
+          color: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 600;
+          font-size: 1.25rem;
+          margin: 0 auto 1.5rem;
         }
 
-        .core-block::before {
-          content: '';
-          position: absolute;
-          top: -1px;
-          left: -1px;
-          width: 0;
-          height: 0;
-          background: linear-gradient(45deg, var(--blue) 50%, transparent 50%);
-          transition: all 0.3s ease;
-          opacity: 0;
+        .step-card h3 {
+          font-size: 1.125rem;
+          font-weight: 600;
+          margin-bottom: 0.75rem;
+          color: var(--neutral-900);
         }
 
-        .core-block:hover::before {
-          width: 30px;
-          height: 30px;
-          opacity: 1;
+        .step-card p {
+          color: var(--neutral-600);
+          font-size: 0.9375rem;
         }
 
-        .core-icon {
-          font-size: 48px;
-          margin-bottom: var(--space-lg);
-          color: var(--blue);
+        /* Recruiters Section */
+        .recruiters-section {
+          background: white;
         }
 
-        .core-quote {
+        .recruiters-content {
+          max-width: 600px;
+          margin: 0 auto;
+          text-align: center;
+        }
+
+        .recruiters-content p {
+          color: var(--neutral-600);
+          font-size: 1.125rem;
+          margin-top: 1rem;
+        }
+
+        /* Social Proof */
+        .social-proof {
+          background: var(--primary-600);
+          color: white;
+          text-align: center;
+        }
+
+        .social-proof h3 {
           font-family: var(--font-display);
-          font-size: 20px;
+          font-size: clamp(2rem, 4vw, 2.5rem);
           font-weight: 700;
-          margin-bottom: var(--space-md);
-          letter-spacing: -0.3px;
+          margin-bottom: 1.5rem;
         }
 
-        .core-text {
-          color: rgba(255, 255, 255, 0.6);
-          font-size: 14px;
-          line-height: 1.7;
+        .social-proof p {
+          font-size: 1.125rem;
+          max-width: 600px;
+          margin: 0 auto;
+          opacity: 0.9;
+        }
+
+        .social-proof p:last-child {
+          opacity: 1;
+          font-weight: 600;
         }
 
         /* CTA Section */
         .cta-section {
-          padding: var(--space-2xl) var(--space-xl);
-          background: var(--white);
+          background: white;
           text-align: center;
-          position: relative;
-          overflow: hidden;
         }
 
-        .cta-container {
-          max-width: 800px;
+        .cta-content {
+          max-width: 600px;
           margin: 0 auto;
-          position: relative;
-          z-index: 2;
         }
 
-        .cta-title {
-          font-size: clamp(42px, 5vw, 72px);
-          font-weight: 900;
-          color: var(--black);
-          margin-bottom: var(--space-md);
+        .cta-content h2 {
+          font-family: var(--font-display);
+          font-size: clamp(2rem, 4vw, 2.5rem);
+          font-weight: 700;
           letter-spacing: -0.02em;
+          margin-bottom: 1.5rem;
+          color: var(--neutral-900);
         }
 
-        .cta-subtitle {
-          font-size: 18px;
-          color: var(--gray);
-          margin-bottom: var(--space-xl);
-          line-height: 1.8;
+        .cta-content p {
+          color: var(--neutral-600);
+          font-size: 1.125rem;
+          margin-bottom: 2rem;
         }
 
-        .cta-buttons {
-          display: flex;
-          gap: var(--space-md);
-          justify-content: center;
+        .cta-button-large {
+          background: var(--neutral-900);
+          color: white;
+          border: none;
+          padding: 1rem 3rem;
+          font-size: 1.125rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s;
         }
 
-        .cta-decoration {
-          position: absolute;
-          inset: 0;
-          pointer-events: none;
+        .cta-button-large:hover {
+          background: var(--neutral-800);
+          transform: translateY(-2px);
+          box-shadow: var(--shadow-xl);
         }
 
-        .cta-decoration span {
-          position: absolute;
-          width: 200px;
-          height: 200px;
-          background: var(--blue);
-          opacity: 0.03;
-        }
-
-        .cta-decoration span:nth-child(1) {
-          top: -100px;
-          left: -100px;
-          transform: rotate(45deg);
-        }
-
-        .cta-decoration span:nth-child(2) {
-          bottom: -100px;
-          right: -100px;
-          transform: rotate(45deg);
+        .footer-line {
+          font-size: 0.875rem;
+          color: var(--neutral-500);
         }
 
         /* Footer */
         .footer {
-          background: var(--black);
-          color: var(--white);
-          padding: var(--space-2xl) var(--space-xl) var(--space-xl);
+          background: var(--neutral-900);
+          color: white;
+          padding: 4rem 2rem 2rem;
+        }
+
+        @media (min-width: 768px) {
+          .footer {
+            padding: 4rem 4rem 2rem;
+          }
         }
 
         .footer-grid {
-          max-width: 1200px;
+          max-width: 1280px;
           margin: 0 auto;
           display: grid;
-          grid-template-columns: 2fr repeat(4, 1fr);
-          gap: var(--space-xl);
-          margin-bottom: var(--space-2xl);
+          grid-template-columns: 1fr;
+          gap: 2rem;
+          margin-bottom: 3rem;
+        }
+
+        @media (min-width: 768px) {
+          .footer-grid {
+            grid-template-columns: 2fr repeat(4, 1fr);
+            gap: 3rem;
+          }
         }
 
         .footer-logo {
           font-family: var(--font-display);
-          font-size: 28px;
-          font-weight: 900;
-          letter-spacing: -0.5px;
-          margin-bottom: var(--space-md);
+          font-size: 1.5rem;
+          font-weight: 800;
+          margin-bottom: 1rem;
+          color: white;
         }
 
         .footer-logo span {
-          color: var(--blue);
+          color: var(--primary-400);
         }
 
-        .footer-text {
-          color: rgba(255, 255, 255, 0.5);
-          font-size: 14px;
-          line-height: 1.8;
-          margin-bottom: var(--space-lg);
+        .footer-desc {
+          color: var(--neutral-400);
+          font-size: 0.875rem;
+          line-height: 1.6;
+          margin-bottom: 1.5rem;
         }
 
         .footer-social {
           display: flex;
-          gap: var(--space-xs);
+          gap: 1.5rem;
         }
 
         .social-link {
-          width: 40px;
-          height: 40px;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: var(--white);
-          text-decoration: none;
-          transition: all 0.3s ease;
-          font-size: 14px;
+          color: var(--neutral-400);
+          font-size: 0.875rem;
+          cursor: pointer;
+          transition: color 0.2s;
         }
 
         .social-link:hover {
-          background: var(--blue);
-          border-color: var(--blue);
-          transform: translateY(-2px);
+          color: white;
         }
 
-        .footer-col-title {
-          font-size: 14px;
-          font-weight: 700;
+        .footer-col h4 {
+          font-size: 0.875rem;
+          font-weight: 600;
+          margin-bottom: 1.25rem;
+          color: white;
           text-transform: uppercase;
-          letter-spacing: 1px;
-          margin-bottom: var(--space-lg);
-          color: var(--white);
+          letter-spacing: 0.05em;
         }
 
-        .footer-links {
-          list-style: none;
-        }
-
-        .footer-links li {
-          margin-bottom: var(--space-sm);
-        }
-
-        .footer-links a {
-          color: rgba(255, 255, 255, 0.5);
+        .footer-link {
+          display: block;
+          color: var(--neutral-400);
           text-decoration: none;
-          font-size: 13px;
-          transition: color 0.3s ease;
+          font-size: 0.875rem;
+          margin-bottom: 0.75rem;
           cursor: pointer;
+          transition: color 0.2s;
         }
 
-        .footer-links a:hover {
-          color: var(--blue);
+        .footer-link:hover {
+          color: white;
         }
 
         .footer-bottom {
-          max-width: 1200px;
+          max-width: 1280px;
           margin: 0 auto;
-          padding-top: var(--space-xl);
-          border-top: 1px solid rgba(255, 255, 255, 0.1);
+          padding-top: 2rem;
+          border-top: 1px solid var(--neutral-800);
           display: flex;
-          justify-content: space-between;
-          align-items: center;
-          color: rgba(255, 255, 255, 0.4);
-          font-size: 12px;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
+          flex-direction: column;
+          gap: 1rem;
+          color: var(--neutral-400);
+          font-size: 0.8125rem;
         }
 
-        /* Parallax sections */
-        .parallax-section {
-          transition: transform 0.1s ease-out;
+        @media (min-width: 768px) {
+          .footer-bottom {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+          }
         }
 
-        /* Responsive */
-        @media (max-width: 1024px) {
-          .hero {
-            grid-template-columns: 1fr;
-          }
-          
-          .hero-right {
-            min-height: 400px;
-          }
-          
-          .features-grid,
-          .showcase-grid,
-          .core-container,
-          .footer-grid,
-          .stats-strip,
-          .philosophy-grid {
-            grid-template-columns: 1fr;
-          }
-          
-          .nav-links {
-            display: none;
-          }
-          
-          :root {
-            --space-2xl: 48px;
-          }
+        .footer-bottom-links {
+          display: flex;
+          gap: 2rem;
+        }
+
+        .footer-bottom-links span {
+          cursor: pointer;
+          transition: color 0.2s;
+        }
+
+        .footer-bottom-links span:hover {
+          color: white;
+        }
+
+        .footer-tagline {
+          text-align: center;
+          margin-top: 3rem;
+          color: var(--neutral-500);
+          font-size: 0.8125rem;
         }
       `}</style>
 
-      {/* Custom Cursor */}
-      <div className="custom-cursor" ref={cursorRef}></div>
-      <div 
-        className="cursor-trail"
-        style={{
-          transform: `translate(${mousePosition.x - 20}px, ${mousePosition.y - 20}px)`
-        }}
-      ></div>
-
-      {/* Navigation */}
-      <nav className={`nav ${scrollY > 50 ? 'scrolled' : ''}`}>
-        <div className="nav-logo" onClick={() => scrollToSection("home")}>
-          Tech<span>Foliyo</span>
-        </div>
-        <div className="nav-links">
-          <a onClick={() => scrollToSection("philosophy")}>Philosophy</a>
-          <a onClick={() => scrollToSection("features")}>Features</a>
-          <a onClick={() => scrollToSection("showcase")}>Showcase</a>
-          <a onClick={() => scrollToSection("core")}>Core</a>
-        </div>
-        <div className="nav-actions">
-          <button className="btn-outline" onClick={() => navigate("/login")}>Sign In</button>
-          <button className="btn-primary" onClick={() => navigate("/signup")}>Get Started</button>
+      <nav className={`nav ${isScrolled ? 'nav-scrolled' : ''}`}>
+        <div className="nav-container">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '3rem' }}>
+            <div className="nav-logo" onClick={() => scrollToSection("home")}>
+              tech<span>foliyo</span>
+            </div>
+            <div className="nav-links">
+              <a onClick={() => scrollToSection("problem")}>Problem</a>
+              <a onClick={() => scrollToSection("solution")}>Solution</a>
+              <a onClick={() => scrollToSection("features")}>Features</a>
+              <a onClick={() => scrollToSection("how-it-works")}>How it works</a>
+            </div>
+          </div>
+          <div className="nav-right">
+            <button className="btn-ghost" onClick={() => navigate("/login")}>Sign in</button>
+            <button className="btn-primary" onClick={() => navigate("/signup")}>Create Portfolio</button>
+          </div>
         </div>
       </nav>
 
-      {/* Hero Section */}
       <section id="home" className="hero">
-        <div className="hero-left">
-          <div className="hero-label">
-            <div className="hero-label-line"></div>
-            <span className="hero-label-text">Engineering Portfolio Platform</span>
-          </div>
-          
-          <h1 className="hero-title">
-            <span className="hero-title-line"><span>Show How You</span></span>
-            <span className="hero-title-line"><span className="blue">Think,</span></span>
-            <span className="hero-title-line"><span>Not Just What You Build</span></span>
-          </h1>
-          
-          <p className="hero-subtitle">
-            Transform your projects into structured case studies that demonstrate 
-            engineering maturity, problem-solving approach, and technical depth.
-          </p>
-          
-          <div className="hero-stats">
-            <div className="stat-item">
-              <span className="stat-number">10K+</span>
-              <span className="stat-label">Engineers</span>
+        <div className="hero-content">
+          <div className="hero-left">
+            <span className="hero-badge">For engineers, by engineers</span>
+            <h1>Your Projects Deserve More Than a Repository.</h1>
+            <p>
+              Techfoliyo is the professional portfolio platform built exclusively for engineers. 
+              Showcase your projects with visuals, demos, and structured case studies.
+            </p>
+            <div className="hero-buttons">
+              <button className="btn-primary-large" onClick={() => navigate("/signup")}>
+                Create Your Portfolio
+              </button>
+              <button className="btn-secondary-large" onClick={() => navigate("/explore")}>
+                Explore Projects
+              </button>
             </div>
-            <div className="stat-item">
-              <span className="stat-number">500+</span>
-              <span className="stat-label">Companies</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-number">94%</span>
-              <span className="stat-label">Hire Rate</span>
+            <div className="trust-line">
+              Join 10,000+ engineers building their professional presence
             </div>
           </div>
-          
-          <div className="hero-cta-group">
-            <button className="btn-primary btn-large" onClick={() => navigate("/signup")}>
-              Start Building
-            </button>
-            <button className="btn-outline btn-large" onClick={() => scrollToSection("showcase")}>
-              View Showcase
-            </button>
-          </div>
-        </div>
-        
-        <div className="hero-right">
-          <div className="grid-system">
-            {[...Array(9)].map((_, i) => (
-              <div className="grid-item" key={i}>
-                <div className="grid-content">
-                  {i === 4 ? '🧠' : ''}
+          <div className="hero-right">
+            <div className="hero-card">
+              <div className="project-structure">
+                <div className="structure-item">
+                  <span className="item-label">Problem</span>
+                  <span className="item-value">High latency in microservices communication</span>
                 </div>
-                <div className="grid-overlay"></div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="scroll-indicator">
-          <div className="scroll-line"></div>
-          <span className="scroll-text">Scroll</span>
-        </div>
-      </section>
-
-      {/* Philosophy Section */}
-      <section id="philosophy" className="philosophy parallax-section" ref={el => sectionsRef.current[0] = el}>
-        <div className="philosophy-grid">
-          <div className="philosophy-block">
-            <div className="philosophy-icon">🧠</div>
-            <h2 className="philosophy-title">Shows decision-making, not just output</h2>
-            <p className="philosophy-text">
-              Every project documents the journey: problems solved, constraints faced, 
-              architectural decisions, trade-offs considered, and lessons learned.
-            </p>
-            <a href="#" className="philosophy-link">
-              Learn More <span>→</span>
-            </a>
-          </div>
-
-          <div className="philosophy-block">
-            <div className="philosophy-icon">📖</div>
-            <h2 className="philosophy-title">Converts projects into technical stories</h2>
-            <p className="philosophy-text">
-              Transform repositories into readable case studies that communicate 
-              engineering thinking, not just implementation details.
-            </p>
-            <a href="#" className="philosophy-link">
-              Learn More <span>→</span>
-            </a>
-          </div>
-
-          <div className="philosophy-block">
-            <div className="philosophy-icon">📊</div>
-            <h2 className="philosophy-title">Evaluates engineering maturity</h2>
-            <p className="philosophy-text">
-              Help recruiters assess how you approach complexity, make decisions,
-              and handle real-world engineering challenges.
-            </p>
-            <a href="#" className="philosophy-link">
-              Learn More <span>→</span>
-            </a>
-          </div>
-
-          <div className="philosophy-block">
-            <div className="philosophy-icon">🔗</div>
-            <h2 className="philosophy-title">Permanent engineering identity</h2>
-            <p className="philosophy-text">
-              Create a shareable professional identity that grows with your career,
-              perfect for interviews, internships, and collaboration.
-            </p>
-            <a href="#" className="philosophy-link">
-              Learn More <span>→</span>
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section id="features" className="features">
-        <div className="features-header">
-          <span className="features-eyebrow">What Makes Us Different</span>
-          <h2 className="features-title">The Intelligence Behind the Code</h2>
-        </div>
-
-        <div className="features-grid">
-          {[
-            {
-              number: "01",
-              title: "Problem Documentation",
-              desc: "Clearly articulate the problem you're solving and why it matters."
-            },
-            {
-              number: "02",
-              title: "Constraint Analysis",
-              desc: "Show how you work within technical, business, and time constraints."
-            },
-            {
-              number: "03",
-              title: "Architectural Decisions",
-              desc: "Explain your system design choices and their implications."
-            },
-            {
-              number: "04",
-              title: "Trade-off Evaluation",
-              desc: "Demonstrate how you balance competing priorities and make decisions."
-            },
-            {
-              number: "05",
-              title: "Complexity Management",
-              desc: "Show how you handle and simplify complex engineering challenges."
-            },
-            {
-              number: "06",
-              title: "Lessons Learned",
-              desc: "Share insights and growth from each project experience."
-            }
-          ].map((feature, index) => (
-            <div className="feature-card" key={index}>
-              <div className="feature-number">{feature.number}</div>
-              <h3 className="feature-title">{feature.title}</h3>
-              <p className="feature-desc">{feature.desc}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="stats-strip">
-          <div className="stat-block">
-            <div className="stat-number-large">73%</div>
-            <div className="stat-label-small">Recruiters skip projects without context</div>
-          </div>
-          <div className="stat-block">
-            <div className="stat-number-large">3x</div>
-            <div className="stat-label-small">More interviews with case studies</div>
-          </div>
-          <div className="stat-block">
-            <div className="stat-number-large">94%</div>
-            <div className="stat-label-small">Better job matches reported</div>
-          </div>
-          <div className="stat-block">
-            <div className="stat-number-large">500+</div>
-            <div className="stat-label-small">Companies actively hiring</div>
-          </div>
-        </div>
-      </section>
-
-      {/* Showcase Section */}
-      <section id="showcase" className="showcase">
-        <div className="features-header">
-          <span className="features-eyebrow">Featured Work</span>
-          <h2 className="features-title">How Engineers Think</h2>
-        </div>
-
-        <div className="showcase-grid">
-          {[
-            {
-              category: "Backend Engineering",
-              title: "Distributed Payment System",
-              desc: "Designed a fault-tolerant payment system handling 10K+ transactions per second with exactly-once semantics.",
-              tech: ["Go", "Kafka", "PostgreSQL", "Redis"]
-            },
-            {
-              category: "Machine Learning",
-              title: "Real-time Recommendation Engine",
-              desc: "Built a low-latency recommendation system serving personalized content to 5M+ users.",
-              tech: ["Python", "TensorFlow", "Ray", "Cassandra"]
-            },
-            {
-              category: "Cloud Architecture",
-              title: "Multi-region Kubernetes Platform",
-              desc: "Architected a multi-region Kubernetes platform with 99.99% availability and disaster recovery.",
-              tech: ["K8s", "AWS", "Terraform", "Istio"]
-            },
-            {
-              category: "Full Stack",
-              title: "Collaborative Design Platform",
-              desc: "Created a real-time collaborative platform with CRDTs for conflict-free editing.",
-              tech: ["React", "Node.js", "WebRTC", "MongoDB"]
-            }
-          ].map((item, index) => (
-            <div className="showcase-card" key={index}>
-              <div className="showcase-category">{item.category}</div>
-              <h3 className="showcase-title">{item.title}</h3>
-              <p className="showcase-desc">{item.desc}</p>
-              <div className="showcase-tech">
-                {item.tech.map((t, i) => (
-                  <span className="tech-tag" key={i}>{t}</span>
-                ))}
+                <div className="structure-item">
+                  <span className="item-label">Architecture</span>
+                  <span className="item-value">Clean architecture with CQRS pattern</span>
+                </div>
+                <div className="structure-item">
+                  <span className="item-label">Tech Stack</span>
+                  <span className="item-value">Node.js, Redis, Docker, Kubernetes</span>
+                </div>
+                <div className="structure-item">
+                  <span className="item-label">Demo</span>
+                  <span className="item-value">Live preview available</span>
+                </div>
               </div>
             </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Core Idea Section */}
-      <section id="core" className="core-idea">
-        <div className="features-header">
-          <span className="features-eyebrow" style={{ color: 'var(--white)' }}>The Core Idea</span>
-          <h2 className="features-title" style={{ color: 'var(--white)' }}>Three Perspectives, One Truth</h2>
-        </div>
-
-        <div className="core-container">
-          <div className="core-block">
-            <div className="core-icon">📝</div>
-            <div className="core-quote">"GitHub shows what you wrote."</div>
-            <div className="core-text">Code repositories document the output, not the thought process behind it.</div>
-          </div>
-
-          <div className="core-block">
-            <div className="core-icon">📄</div>
-            <div className="core-quote">"A resume shows what you claim."</div>
-            <div className="core-text">Traditional resumes list skills and titles without proving understanding.</div>
-          </div>
-
-          <div className="core-block">
-            <div className="core-icon">🧠</div>
-            <div className="core-quote">"TechFoliyo shows how you think."</div>
-            <div className="core-text">Structured case studies reveal engineering maturity and problem-solving ability.</div>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="cta-section">
-        <div className="cta-decoration">
-          <span></span>
-          <span></span>
-        </div>
-        <div className="cta-container">
-          <h2 className="cta-title">Ready to Show How You Think?</h2>
-          <p className="cta-subtitle">
-            Join thousands of engineers who are getting hired through structured case studies
-            and live project demonstrations. GitHub shows the code. TechFoliyo shows the intelligence.
+      <section id="problem" className="problem-section">
+        <div className="section-container">
+          <div className="section-header">
+            <h2>Engineers Build Amazing Things. But They Struggle to Present Them.</h2>
+          </div>
+
+          <div className="problem-grid">
+            <div className="problem-card">
+              <div className="icon">📁</div>
+              <h3>Code repositories are hard to read</h3>
+              <p>Raw code without context doesn't show your thinking or problem-solving approach.</p>
+            </div>
+            <div className="problem-card">
+              <div className="icon">📄</div>
+              <h3>Resumes don't show real skills</h3>
+              <p>Listing technologies doesn't prove you can actually build with them.</p>
+            </div>
+            <div className="problem-card">
+              <div className="icon">⏰</div>
+              <h3>Personal websites take too long</h3>
+              <p>Engineers should spend time coding, not designing portfolio websites.</p>
+            </div>
+          </div>
+
+          <p style={{ 
+            textAlign: 'center', 
+            fontSize: '1.25rem', 
+            fontWeight: 500,
+            color: 'var(--neutral-900)',
+            marginTop: '3rem'
+          }}>
+            Engineers need a platform that turns projects into professional portfolios.
           </p>
-          <div className="cta-buttons">
-            <button className="btn-primary btn-large" onClick={() => navigate("/signup")}>
-              Create Your Portfolio
-            </button>
-            <button className="btn-outline btn-large" onClick={() => scrollToSection("features")}>
-              Learn More
-            </button>
+        </div>
+      </section>
+
+      <section id="solution" className="solution-section">
+        <div className="section-container">
+          <div className="section-header">
+            <h2>A Portfolio Platform Designed for Engineers</h2>
+            <p>
+              Techfoliyo combines code credibility, professional identity, and visual storytelling into one powerful portfolio system.
+            </p>
+          </div>
+
+          <div className="solution-grid">
+            <div>
+              <ul className="solution-list">
+                <li>Create project case studies with images, videos, and live demos</li>
+                <li>Organize your work into a clean public portfolio</li>
+                <li>Share a single link that represents your engineering journey</li>
+              </ul>
+            </div>
+            <div className="solution-card">
+              <div className="solution-card-header">
+                API Gateway Service - Case Study
+              </div>
+              <div className="solution-card-content">
+                <div style={{ marginBottom: '1rem' }}>
+                  <span style={{ fontWeight: 600, color: 'var(--primary-600)' }}>Problem:</span>{' '}
+                  <span style={{ color: 'var(--neutral-600)' }}>High latency in microservices</span>
+                </div>
+                <div style={{ marginBottom: '1rem' }}>
+                  <span style={{ fontWeight: 600, color: 'var(--primary-600)' }}>Solution:</span>{' '}
+                  <span style={{ color: 'var(--neutral-600)' }}>Implemented Redis caching layer</span>
+                </div>
+                <div style={{ marginBottom: '1rem' }}>
+                  <span style={{ fontWeight: 600, color: 'var(--primary-600)' }}>Demo:</span>{' '}
+                  <span style={{ color: 'var(--neutral-600)' }}>Live preview →</span>
+                </div>
+                <div>
+                  <span style={{ fontWeight: 600, color: 'var(--primary-600)' }}>Tech Stack:</span>{' '}
+                  <span style={{ color: 'var(--neutral-600)' }}>Node.js, Redis, Docker</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
+      <section id="features" className="features-section">
+        <div className="section-container">
+          <div className="section-header" style={{ textAlign: 'center', margin: '0 auto 3rem' }}>
+            <h2>Everything You Need to Showcase Your Work</h2>
+          </div>
+
+          <div className="features-grid">
+            <div className="feature-card">
+              <div className="feature-icon">📸</div>
+              <h3>Project Case Studies</h3>
+              <p>Turn your projects into structured showcases with screenshots, videos, descriptions, and tech stacks.</p>
+            </div>
+            <div className="feature-card">
+              <div className="feature-icon">👤</div>
+              <h3>Professional Engineer Profiles</h3>
+              <p>Highlight your skills, experience, and education in a clean, modern layout.</p>
+            </div>
+            <div className="feature-card">
+              <div className="feature-icon">🔗</div>
+              <h3>GitHub Integration</h3>
+              <p>Link repositories and sync project details automatically.</p>
+            </div>
+            <div className="feature-card">
+              <div className="feature-icon">🎨</div>
+              <h3>Visual Portfolio Themes</h3>
+              <p>Choose from beautifully designed portfolio styles.</p>
+            </div>
+            <div className="feature-card">
+              <div className="feature-icon">🔗</div>
+              <h3>Public Portfolio Link</h3>
+              <p>Get a shareable professional portfolio URL.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="how-it-works" className="how-it-works">
+        <div className="section-container">
+          <div className="section-header" style={{ textAlign: 'center', margin: '0 auto 3rem' }}>
+            <h2>Build Your Portfolio in Three Simple Steps</h2>
+          </div>
+
+          <div className="steps-grid">
+            <div className="step-card">
+              <div className="step-number">1</div>
+              <h3>Create your engineer profile</h3>
+              <p>Set up your professional identity in minutes.</p>
+            </div>
+            <div className="step-card">
+              <div className="step-number">2</div>
+              <h3>Add and showcase your projects</h3>
+              <p>Document your work with structured case studies.</p>
+            </div>
+            <div className="step-card">
+              <div className="step-number">3</div>
+              <h3>Share your portfolio with the world</h3>
+              <p>One link that represents your engineering journey.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="recruiters-section">
+        <div className="section-container">
+          <div className="recruiters-content">
+            <h2>Discover Engineers Through Real Projects</h2>
+            <p>
+              Browse portfolios, filter by skills, and evaluate engineers through their actual work — not just resumes.
+            </p>
+            <p style={{ color: 'var(--primary-600)', fontWeight: 500, marginTop: '1.5rem' }}>
+              Techfoliyo helps recruiters find talent faster and smarter.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="social-proof">
+        <div className="section-container">
+          <h3>Built for the Next Generation of Engineers</h3>
+          <p>
+            Join a growing community of 10,000+ engineers showcasing innovative projects across AI, web development, robotics, and more.
+          </p>
+          <p style={{ marginTop: '2rem' }}>
+            Your work deserves to be seen.
+          </p>
+        </div>
+      </section>
+
+      <section className="cta-section">
+        <div className="cta-content">
+          <h2>Start Building Your Engineering Portfolio Today</h2>
+          <p>Create a professional portfolio in minutes and showcase what you build.</p>
+          <button className="cta-button-large" onClick={() => navigate("/signup")}>
+            Create Your Free Portfolio
+          </button>
+        </div>
+      </section>
+
       <footer className="footer">
         <div className="footer-grid">
           <div>
-            <div className="footer-logo">Tech<span>Foliyo</span></div>
-            <p className="footer-text">
-              GitHub shows what you wrote. A resume shows what you claim.
-              TechFoliyo shows how you think.
+            <div className="footer-logo">tech<span>foliyo</span></div>
+            <p className="footer-desc">
+              The professional portfolio platform for engineers. Showcase your projects, share your journey.
             </p>
             <div className="footer-social">
-              <a href="#" className="social-link">X</a>
-              <a href="#" className="social-link">IN</a>
-              <a href="#" className="social-link">GH</a>
-              <a href="#" className="social-link">LI</a>
+              <span className="social-link">Twitter</span>
+              <span className="social-link">GitHub</span>
+              <span className="social-link">LinkedIn</span>
             </div>
           </div>
-          
-          <div>
-            <h4 className="footer-col-title">Platform</h4>
-            <ul className="footer-links">
-              <li><a onClick={() => scrollToSection("features")}>Features</a></li>
-              <li><a onClick={() => scrollToSection("showcase")}>Showcase</a></li>
-              <li><a href="#">Pricing</a></li>
-              <li><a href="#">Security</a></li>
-            </ul>
+          <div className="footer-col">
+            <h4>Platform</h4>
+            <span className="footer-link" onClick={() => scrollToSection("how-it-works")}>How it works</span>
+            <span className="footer-link" onClick={() => scrollToSection("features")}>Features</span>
+            <span className="footer-link">Pricing</span>
+            <span className="footer-link">FAQ</span>
           </div>
-          
-          <div>
-            <h4 className="footer-col-title">Resources</h4>
-            <ul className="footer-links">
-              <li><a href="#">Documentation</a></li>
-              <li><a href="#">API</a></li>
-              <li><a href="#">Blog</a></li>
-              <li><a href="#">Community</a></li>
-            </ul>
+          <div className="footer-col">
+            <h4>Developers</h4>
+            <span className="footer-link">Create Portfolio</span>
+            <span className="footer-link">Browse Projects</span>
+            <span className="footer-link">Community</span>
+            <span className="footer-link">Documentation</span>
           </div>
-          
-          <div>
-            <h4 className="footer-col-title">Company</h4>
-            <ul className="footer-links">
-              <li><a href="#">About</a></li>
-              <li><a href="#">Careers</a></li>
-              <li><a href="#">Contact</a></li>
-              <li><a href="#">Press</a></li>
-            </ul>
+          <div className="footer-col">
+            <h4>Recruiters</h4>
+            <span className="footer-link">Search Talent</span>
+            <span className="footer-link">Enterprise</span>
+            <span className="footer-link">Contact Sales</span>
+            <span className="footer-link">Success Stories</span>
           </div>
-          
-          <div>
-            <h4 className="footer-col-title">Legal</h4>
-            <ul className="footer-links">
-              <li><a href="#">Privacy</a></li>
-              <li><a href="#">Terms</a></li>
-              <li><a href="#">Cookies</a></li>
-              <li><a href="#">GDPR</a></li>
-            </ul>
+          <div className="footer-col">
+            <h4>Company</h4>
+            <span className="footer-link">About</span>
+            <span className="footer-link">Blog</span>
+            <span className="footer-link">Careers</span>
+            <span className="footer-link">Contact</span>
           </div>
         </div>
-        
         <div className="footer-bottom">
-          <span>© 2026 TechFoliyo. All rights reserved.</span>
-          <span>Built for engineers who think deeply</span>
+          <span>© 2025 Techfoliyo. All rights reserved.</span>
+          <div className="footer-bottom-links">
+            <span>Privacy</span>
+            <span>Terms</span>
+            <span>Security</span>
+          </div>
+        </div>
+        <div className="footer-tagline">
+          Techfoliyo — The professional portfolio platform for engineers.
         </div>
       </footer>
     </>
