@@ -40,8 +40,7 @@ display:flex;
 height:100vh;
 }
 
-/* LEFT SIDE */
-
+/* LEFT SIDE - Blue gradient colors */
 .left{
 width:50%;
 background:linear-gradient(135deg,#2F6FE4,#5B8FF9);
@@ -161,13 +160,12 @@ width:460px;
 background:white;
 }
 
-/* BADGE */
-
+/* BADGE - Same blue as left side */
 .badge{
 display:inline-block;
 padding:0;
 background:transparent;
-color: #2563EB;
+color: #2F6FE4;
 font-size:14px;
 font-weight:600;
 letter-spacing:0.5px;
@@ -226,8 +224,8 @@ font-family: 'Inter', sans-serif;
 }
 
 input:focus{
-border-color: #2563EB;
-box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+border-color: #2F6FE4;
+box-shadow: 0 0 0 4px rgba(47, 111, 228, 0.1);
 }
 
 input::placeholder{
@@ -337,7 +335,7 @@ transform:translateY(-2px);
 font-size:16px;
 }
 
-/* LOGIN */
+/* LOGIN - Same blue as left side */
 
 .login{
 margin-top:20px;
@@ -348,7 +346,7 @@ font-family: 'Inter', sans-serif;
 }
 
 .login span{
-color: #2563EB;
+color: #2F6FE4;
 cursor:pointer;
 font-weight:600;
 margin-left:4px;
@@ -356,7 +354,7 @@ transition: color 0.2s ease;
 }
 
 .login span:hover{
-color: #1D4ED8;
+color: #5B8FF9;
 text-decoration:underline;
 }
 
@@ -433,7 +431,7 @@ and custom themes.
 
 <div className="card">
 
-{/* Badge */}
+{/* Badge - Same blue as left side */}
 <div className="badge">
 WELCOME TO TECHFOLIYO
 </div>
@@ -541,6 +539,7 @@ Create Account →
 <div className="login">
 
 Already have an account?
+{/* Log in link - Same blue as left side */}
 <span onClick={()=>navigate("/login")}>
 Log in
 </span>
