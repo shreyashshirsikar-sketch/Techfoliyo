@@ -38,7 +38,7 @@ function LandingPage() {
         }
 
         :root {
-          /* Premium 20-40-50 Color Scheme */
+          /* 20% Blue, 40% Black, 50% White Color Scheme */
           --blue-20: #2563EB;
           --blue-dark: #1D4ED8;
           --blue-light: #3B82F6;
@@ -48,14 +48,12 @@ function LandingPage() {
           --black-40: #0A0A0A;
           --black-light: #1A1A1A;
           --black-soft: #2A2A2A;
-          --black-mist: #F5F5F5;
           
           --white-50: #FFFFFF;
           --white-off: #FAFAFA;
           --white-soft: #F3F4F6;
-          --white-cream: #F9FAFB;
           
-          /* Neutral Colors - Refined */
+          /* Neutral Colors */
           --neutral-50: #F9FAFB;
           --neutral-100: #F3F4F6;
           --neutral-200: #E5E7EB;
@@ -70,20 +68,13 @@ function LandingPage() {
           --font-display: 'Plus Jakarta Sans', sans-serif;
           --font-body: 'Inter', sans-serif;
           
-          /* Premium Shadows */
-          --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.02);
-          --shadow-sm: 0 2px 4px 0 rgba(0, 0, 0, 0.02);
-          --shadow-md: 0 4px 8px -2px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.02);
-          --shadow-lg: 0 12px 24px -8px rgba(0, 0, 0, 0.08);
-          --shadow-xl: 0 20px 32px -12px rgba(0, 0, 0, 0.1);
-          --shadow-2xl: 0 32px 48px -16px rgba(0, 0, 0, 0.12);
-          --shadow-blue: 0 12px 24px -8px rgba(37, 99, 235, 0.15);
-          
-          /* Transitions */
-          --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-          --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
-          --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
-          --transition-bounce: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+          /* Shadows */
+          --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+          --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+          --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+          --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+          --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+          --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         }
 
         body {
@@ -92,10 +83,9 @@ function LandingPage() {
           color: var(--black-40);
           line-height: 1.5;
           -webkit-font-smoothing: antialiased;
-          -moz-osx-font-smoothing: grayscale;
         }
 
-        /* Premium Navigation */
+        /* Navigation */
         .nav {
           position: fixed;
           top: 0;
@@ -103,22 +93,20 @@ function LandingPage() {
           right: 0;
           z-index: 50;
           padding: 1rem 2rem;
-          transition: all var(--transition-base);
+          transition: all 0.3s ease;
         }
 
         @media (min-width: 768px) {
           .nav {
-            padding: 1.5rem 4rem;
+            padding: 1.25rem 4rem;
           }
         }
 
         .nav-scrolled {
-          background: rgba(255, 255, 255, 0.85);
+          background: rgba(255, 255, 255, 0.8);
           backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          border-bottom: 1px solid rgba(229, 231, 235, 0.5);
-          padding: 0.875rem 2rem;
-          box-shadow: var(--shadow-md);
+          border-bottom: 1px solid var(--neutral-200);
+          padding: 0.75rem 2rem;
         }
 
         @media (min-width: 768px) {
@@ -142,22 +130,6 @@ function LandingPage() {
           color: var(--black-40);
           cursor: pointer;
           letter-spacing: -0.02em;
-          position: relative;
-        }
-
-        .nav-logo::after {
-          content: '';
-          position: absolute;
-          bottom: -4px;
-          left: 0;
-          width: 0;
-          height: 2px;
-          background: var(--blue-20);
-          transition: width var(--transition-base);
-        }
-
-        .nav-logo:hover::after {
-          width: 100%;
         }
 
         .nav-logo span {
@@ -166,7 +138,7 @@ function LandingPage() {
 
         .nav-links {
           display: none;
-          gap: 3rem;
+          gap: 2rem;
         }
 
         @media (min-width: 768px) {
@@ -181,29 +153,11 @@ function LandingPage() {
           font-size: 0.9375rem;
           font-weight: 500;
           cursor: pointer;
-          transition: all var(--transition-fast);
-          position: relative;
-          padding: 0.5rem 0;
-        }
-
-        .nav-links a::after {
-          content: '';
-          position: absolute;
-          bottom: 0;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 0;
-          height: 2px;
-          background: var(--blue-20);
-          transition: width var(--transition-base);
+          transition: color 0.2s;
         }
 
         .nav-links a:hover {
           color: var(--blue-20);
-        }
-
-        .nav-links a:hover::after {
-          width: 80%;
         }
 
         .nav-right {
@@ -220,62 +174,35 @@ function LandingPage() {
           font-weight: 500;
           cursor: pointer;
           padding: 0.5rem 1rem;
-          transition: all var(--transition-fast);
-          border-radius: 8px;
+          transition: color 0.2s;
         }
 
         .btn-ghost:hover {
           color: var(--blue-20);
-          background: var(--blue-mist);
         }
 
         .btn-primary {
           background: var(--black-40);
           color: var(--white-50);
           border: none;
-          padding: 0.5rem 1.5rem;
+          padding: 0.5rem 1.25rem;
           font-size: 0.9375rem;
           font-weight: 500;
           cursor: pointer;
-          transition: all var(--transition-base);
-          border-radius: 8px;
-          position: relative;
-          overflow: hidden;
-        }
-
-        .btn-primary::before {
-          content: '';
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          width: 0;
-          height: 0;
-          border-radius: 50%;
-          background: rgba(255, 255, 255, 0.2);
-          transform: translate(-50%, -50%);
-          transition: width 0.6s, height 0.6s;
-        }
-
-        .btn-primary:hover::before {
-          width: 300px;
-          height: 300px;
+          transition: all 0.2s;
         }
 
         .btn-primary:hover {
           background: var(--black-light);
-          transform: translateY(-1px);
-          box-shadow: var(--shadow-lg);
         }
 
-        /* Premium Hero Section */
+        /* Hero Section */
         .hero {
           min-height: 100vh;
           display: flex;
           align-items: center;
           padding: 0 2rem;
-          background: var(--white-50);
-          position: relative;
-          overflow: hidden;
+          background: linear-gradient(to bottom, var(--neutral-50), var(--white-50));
         }
 
         @media (min-width: 768px) {
@@ -290,54 +217,23 @@ function LandingPage() {
           width: 100%;
           display: grid;
           grid-template-columns: 1fr;
-          gap: 4rem;
+          gap: 3rem;
           align-items: center;
-          padding: 8rem 0;
-          position: relative;
-          z-index: 2;
+          padding: 6rem 0;
         }
 
         @media (min-width: 1024px) {
           .hero-content {
             grid-template-columns: 1fr 1fr;
-            gap: 5rem;
+            gap: 4rem;
           }
-        }
-
-        .hero-left {
-          animation: fadeInUp 0.8s var(--transition-bounce);
-        }
-
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .hero-badge {
-          display: inline-block;
-          background: linear-gradient(135deg, var(--blue-mist), var(--white-50));
-          color: var(--blue-20);
-          font-size: 0.875rem;
-          font-weight: 600;
-          padding: 0.5rem 1.25rem;
-          margin-bottom: 2rem;
-          border-radius: 100px;
-          border: 1px solid rgba(37, 99, 235, 0.15);
-          box-shadow: var(--shadow-sm);
-          letter-spacing: 0.3px;
         }
 
         .hero-left h1 {
           font-family: var(--font-display);
-          font-size: clamp(2.5rem, 5vw, 3.75rem);
+          font-size: clamp(2.5rem, 5vw, 3.5rem);
           font-weight: 800;
-          line-height: 1.15;
+          line-height: 1.1;
           letter-spacing: -0.02em;
           color: var(--black-40);
           margin-bottom: 1.5rem;
@@ -345,170 +241,90 @@ function LandingPage() {
 
         .hero-left h1 span {
           color: var(--blue-20);
-          display: block;
-          position: relative;
-          display: inline-block;
         }
 
         .hero-left p {
           font-size: 1.125rem;
           color: var(--neutral-600);
-          margin-bottom: 2.5rem;
+          margin-bottom: 2rem;
           max-width: 500px;
-          line-height: 1.7;
+        }
+
+        .hero-badge {
+          display: inline-block;
+          background: var(--blue-mist);
+          color: var(--blue-20);
+          font-size: 0.875rem;
+          font-weight: 500;
+          padding: 0.25rem 0.75rem;
+          margin-bottom: 1.5rem;
         }
 
         .hero-buttons {
           display: flex;
           gap: 1rem;
           align-items: center;
-          margin-bottom: 2.5rem;
-          flex-wrap: wrap;
+          margin-bottom: 2rem;
         }
 
         .btn-primary-large {
           background: var(--black-40);
           color: var(--white-50);
           border: none;
-          padding: 1rem 2.5rem;
+          padding: 0.875rem 2rem;
           font-size: 1rem;
-          font-weight: 600;
+          font-weight: 500;
           cursor: pointer;
-          transition: all var(--transition-base);
-          border-radius: 12px;
-          box-shadow: var(--shadow-md);
-          position: relative;
-          overflow: hidden;
-        }
-
-        .btn-primary-large::before {
-          content: '';
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          width: 0;
-          height: 0;
-          border-radius: 50%;
-          background: rgba(255, 255, 255, 0.2);
-          transform: translate(-50%, -50%);
-          transition: width 0.8s, height 0.8s;
-        }
-
-        .btn-primary-large:hover::before {
-          width: 400px;
-          height: 400px;
+          transition: all 0.2s;
         }
 
         .btn-primary-large:hover {
           background: var(--black-light);
           transform: translateY(-2px);
-          box-shadow: var(--shadow-xl);
+          box-shadow: var(--shadow-lg);
         }
 
         .btn-secondary-large {
-          background: transparent;
-          border: 1.5px solid var(--neutral-300);
-          color: var(--neutral-700);
-          padding: 1rem 2.5rem;
-          font-size: 1rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all var(--transition-base);
-          border-radius: 12px;
-          position: relative;
-          overflow: hidden;
-        }
-
-        .btn-secondary-large::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
           background: var(--blue-20);
-          opacity: 0;
-          transition: opacity var(--transition-base);
-          z-index: -1;
+          color: var(--white-50);
+          border: none;
+          padding: 0.875rem 2rem;
+          font-size: 1rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s;
         }
 
         .btn-secondary-large:hover {
-          border-color: var(--blue-20);
-          color: var(--white-50);
+          background: var(--blue-dark);
           transform: translateY(-2px);
-          box-shadow: var(--shadow-blue);
-        }
-
-        .btn-secondary-large:hover::before {
-          opacity: 1;
+          box-shadow: var(--shadow-lg);
         }
 
         .trust-line {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
           font-size: 0.875rem;
           color: var(--neutral-500);
-        }
-
-        .trust-line::before {
-          content: '';
-          width: 40px;
-          height: 2px;
-          background: linear-gradient(90deg, var(--blue-20), transparent);
-        }
-
-        .hero-right {
-          animation: fadeIn 1s var(--transition-slow);
-        }
-
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
+          border-top: 1px solid var(--neutral-200);
+          padding-top: 1.5rem;
         }
 
         .hero-card {
           background: var(--white-50);
-          padding: 2.5rem;
-          box-shadow: var(--shadow-2xl);
-          border: 1px solid var(--neutral-100);
-          border-radius: 24px;
-          position: relative;
-          overflow: hidden;
-          transition: transform var(--transition-base);
-        }
-
-        .hero-card:hover {
-          transform: translateY(-4px);
-        }
-
-        .hero-card::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 6px;
-          background: linear-gradient(90deg, var(--blue-20), var(--blue-light), var(--blue-soft));
+          padding: 2rem;
+          box-shadow: var(--shadow-xl);
+          border: 1px solid var(--neutral-200);
         }
 
         .project-structure {
           background: var(--neutral-50);
-          border-radius: 16px;
-          padding: 1.5rem;
         }
 
         .structure-item {
           display: flex;
           gap: 1rem;
-          margin-bottom: 1.25rem;
-          padding-bottom: 1.25rem;
+          margin-bottom: 1rem;
+          padding-bottom: 1rem;
           border-bottom: 1px solid var(--neutral-200);
-          transition: all var(--transition-fast);
-        }
-
-        .structure-item:hover {
-          transform: translateX(4px);
         }
 
         .structure-item:last-child {
@@ -522,23 +338,21 @@ function LandingPage() {
           min-width: 100px;
           color: var(--blue-20);
           font-size: 0.875rem;
-          letter-spacing: 0.3px;
         }
 
         .item-value {
           color: var(--neutral-600);
           font-size: 0.875rem;
-          line-height: 1.6;
         }
 
-        /* Premium Section Styles */
+        /* Section Styles */
         section {
-          padding: 6rem 2rem;
+          padding: 5rem 2rem;
         }
 
         @media (min-width: 768px) {
           section {
-            padding: 8rem 4rem;
+            padding: 6rem 4rem;
           }
         }
 
@@ -549,35 +363,33 @@ function LandingPage() {
 
         .section-header {
           max-width: 600px;
-          margin-bottom: 4rem;
+          margin-bottom: 3rem;
         }
 
         .section-header h2 {
           font-family: var(--font-display);
-          font-size: clamp(2rem, 4vw, 2.75rem);
+          font-size: clamp(2rem, 4vw, 2.5rem);
           font-weight: 700;
           letter-spacing: -0.02em;
-          margin-bottom: 1.25rem;
+          margin-bottom: 1rem;
           color: var(--black-40);
-          line-height: 1.2;
         }
 
         .section-header p {
           color: var(--neutral-600);
           font-size: 1.125rem;
-          line-height: 1.7;
         }
 
-        /* Premium Problem Section */
+        /* Problem Section */
         .problem-section {
           background: var(--white-50);
-          position: relative;
         }
 
         .problem-grid {
           display: grid;
           grid-template-columns: 1fr;
-          gap: 2rem;
+          gap: 1.5rem;
+          margin-bottom: 3rem;
         }
 
         @media (min-width: 768px) {
@@ -588,76 +400,46 @@ function LandingPage() {
 
         .problem-card {
           background: var(--white-50);
-          border: 1px solid var(--neutral-100);
-          padding: 2.5rem;
-          transition: all var(--transition-base);
-          border-radius: 20px;
-          position: relative;
-          overflow: hidden;
-          box-shadow: var(--shadow-sm);
-        }
-
-        .problem-card::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(135deg, var(--blue-mist), transparent);
-          opacity: 0;
-          transition: opacity var(--transition-base);
+          border: 1px solid var(--neutral-200);
+          padding: 2rem;
+          transition: all 0.2s;
         }
 
         .problem-card:hover {
           border-color: var(--blue-20);
-          box-shadow: var(--shadow-xl);
-          transform: translateY(-6px);
+          box-shadow: var(--shadow-lg);
         }
 
-        .problem-card:hover::before {
+        .problem-card .problem-number {
+          font-size: 1.5rem;
+          font-weight: 600;
+          margin-bottom: 1.5rem;
+          color: var(--blue-20);
           opacity: 0.5;
         }
 
-        .problem-card .problem-icon {
-          font-size: 1.5rem;
-          font-weight: 700;
-          margin-bottom: 1.5rem;
-          color: var(--white-50);
-          background: var(--blue-20);
-          display: inline-block;
-          padding: 0.5rem 1rem;
-          border-radius: 12px;
-          box-shadow: var(--shadow-md);
-          letter-spacing: -0.5px;
-          position: relative;
-          z-index: 2;
-        }
-
         .problem-card h3 {
-          font-size: 1.25rem;
+          font-size: 1.125rem;
           font-weight: 600;
-          margin-bottom: 1rem;
+          margin-bottom: 0.75rem;
           color: var(--black-40);
-          position: relative;
-          z-index: 2;
         }
 
         .problem-card p {
           color: var(--neutral-600);
           font-size: 0.9375rem;
-          line-height: 1.7;
-          position: relative;
-          z-index: 2;
+          line-height: 1.6;
         }
 
-        /* Premium Features Section */
+        /* Features Section */
         .features-section {
-          background: var(--white-off);
-          position: relative;
+          background: var(--white-50);
         }
 
         .features-grid {
           display: grid;
           grid-template-columns: 1fr;
-          gap: 2rem;
+          gap: 1.5rem;
           margin-top: 3rem;
         }
 
@@ -668,61 +450,27 @@ function LandingPage() {
         }
 
         .feature-card {
-          padding: 2.5rem;
+          padding: 2rem;
           background: var(--white-50);
-          border: 1px solid var(--neutral-100);
-          transition: all var(--transition-base);
-          border-radius: 20px;
-          position: relative;
-          overflow: hidden;
-          box-shadow: var(--shadow-sm);
-        }
-
-        .feature-card::after {
-          content: '';
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          height: 4px;
-          background: linear-gradient(90deg, var(--blue-20), var(--blue-light));
-          transform: scaleX(0);
-          transition: transform var(--transition-base);
+          border: 1px solid var(--neutral-200);
+          transition: all 0.2s;
         }
 
         .feature-card:hover {
           border-color: var(--blue-20);
-          box-shadow: var(--shadow-xl);
-          transform: translateY(-6px);
+          box-shadow: var(--shadow-lg);
         }
 
-        .feature-card:hover::after {
-          transform: scaleX(1);
-        }
-
-        .feature-icon {
+        .feature-number {
           font-size: 1.5rem;
-          font-weight: 700;
+          font-weight: 600;
           margin-bottom: 1.5rem;
-          color: var(--white-50);
-          background: var(--blue-20);
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 56px;
-          height: 56px;
-          border-radius: 16px;
-          box-shadow: var(--shadow-md);
-          transition: all var(--transition-base);
-        }
-
-        .feature-card:hover .feature-icon {
-          transform: scale(1.05) rotate(2deg);
-          box-shadow: var(--shadow-blue);
+          color: var(--blue-20);
+          opacity: 0.5;
         }
 
         .feature-card h3 {
-          font-size: 1.25rem;
+          font-size: 1.125rem;
           font-weight: 600;
           margin-bottom: 1rem;
           color: var(--black-40);
@@ -731,10 +479,10 @@ function LandingPage() {
         .feature-card p {
           color: var(--neutral-600);
           font-size: 0.9375rem;
-          line-height: 1.7;
+          line-height: 1.6;
         }
 
-        /* Premium Audience Section */
+        /* Audience Section */
         .audience-section {
           background: var(--white-50);
         }
@@ -754,106 +502,50 @@ function LandingPage() {
 
         .audience-card {
           text-align: center;
-          padding: 3rem 2rem;
+          padding: 2rem;
           background: var(--white-50);
-          border: 1px solid var(--neutral-100);
-          border-radius: 24px;
-          transition: all var(--transition-base);
-          position: relative;
-          overflow: hidden;
-          box-shadow: var(--shadow-sm);
-        }
-
-        .audience-card::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 100%;
-          background: radial-gradient(circle at 50% 0%, var(--blue-mist), transparent 70%);
-          opacity: 0;
-          transition: opacity var(--transition-base);
+          border: 1px solid var(--neutral-200);
+          transition: all 0.2s;
         }
 
         .audience-card:hover {
           border-color: var(--blue-20);
-          box-shadow: var(--shadow-xl);
-          transform: translateY(-6px);
-        }
-
-        .audience-card:hover::before {
-          opacity: 1;
-        }
-
-        .audience-icon {
-          font-size: 1.5rem;
-          font-weight: 700;
-          margin: 0 auto 1.5rem;
-          color: var(--white-50);
-          background: var(--black-40);
-          width: 64px;
-          height: 64px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 50%;
           box-shadow: var(--shadow-lg);
-          transition: all var(--transition-base);
-          position: relative;
-          z-index: 2;
         }
 
-        .audience-card:hover .audience-icon {
-          background: var(--blue-20);
-          transform: scale(1.05);
+        .audience-number {
+          font-size: 1.5rem;
+          font-weight: 600;
+          margin: 0 auto 1rem;
+          color: var(--blue-20);
+          opacity: 0.5;
         }
 
         .audience-card h3 {
-          font-size: 1.25rem;
+          font-size: 1.125rem;
           font-weight: 600;
-          margin-bottom: 1rem;
+          margin-bottom: 0.75rem;
           color: var(--black-40);
-          position: relative;
-          z-index: 2;
         }
 
         .audience-card p {
           color: var(--neutral-600);
           font-size: 0.9375rem;
-          line-height: 1.7;
-          position: relative;
-          z-index: 2;
+          line-height: 1.6;
         }
 
-        /* Premium Project Types Section */
+        /* Project Types Section */
         .project-types-section {
-          background: linear-gradient(135deg, var(--blue-20), var(--blue-dark));
+          background: var(--blue-20);
           color: var(--white-50);
           text-align: center;
-          position: relative;
-          overflow: hidden;
-        }
-
-        .project-types-section::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMzAgMTBhMjAgMjAgMCAwIDEgMCA0MCAyMCAyMCAwIDAgMSAwLTQweiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMSkiIHN0cm9rZS13aWR0aD0iMiIvPjwvc3ZnPg==') repeat;
-          opacity: 0.1;
-          animation: slide 60s linear infinite;
-        }
-
-        @keyframes slide {
-          from { transform: translateX(0) translateY(0); }
-          to { transform: translateX(60px) translateY(60px); }
+          padding: 4rem 2rem;
         }
 
         .project-types-section h2 {
-          color: var(--white-50);
+          font-size: clamp(2rem, 4vw, 2.5rem);
+          font-weight: 700;
           margin-bottom: 2rem;
-          position: relative;
-          z-index: 2;
         }
 
         .tags-container {
@@ -861,68 +553,37 @@ function LandingPage() {
           flex-wrap: wrap;
           gap: 1rem;
           justify-content: center;
-          margin-top: 2rem;
-          position: relative;
-          z-index: 2;
         }
 
         .tag {
-          padding: 0.75rem 2rem;
+          padding: 0.5rem 1.5rem;
           background: rgba(255, 255, 255, 0.1);
-          backdrop-filter: blur(8px);
-          -webkit-backdrop-filter: blur(8px);
-          border-radius: 100px;
-          font-size: 0.9375rem;
-          font-weight: 500;
-          color: var(--white-50);
           border: 1px solid rgba(255, 255, 255, 0.2);
-          transition: all var(--transition-base);
-          cursor: default;
-          box-shadow: var(--shadow-md);
+          border-radius: 0;
+          font-size: 0.9375rem;
+          color: var(--white-50);
+          transition: all 0.2s;
         }
 
         .tag:hover {
           background: rgba(255, 255, 255, 0.2);
-          transform: translateY(-2px) scale(1.02);
-          border-color: rgba(255, 255, 255, 0.4);
-          box-shadow: var(--shadow-lg);
+          transform: translateY(-2px);
         }
 
-        /* Premium CTA Section */
+        /* CTA Section */
         .cta-section {
           background: var(--white-50);
           text-align: center;
-          position: relative;
-          overflow: hidden;
-        }
-
-        .cta-section::before {
-          content: '';
-          position: absolute;
-          top: -50%;
-          left: -50%;
-          width: 200%;
-          height: 200%;
-          background: radial-gradient(circle, var(--blue-mist) 0%, transparent 70%);
-          opacity: 0.5;
-          animation: rotate 60s linear infinite;
-        }
-
-        @keyframes rotate {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
         }
 
         .cta-content {
           max-width: 600px;
           margin: 0 auto;
-          position: relative;
-          z-index: 2;
         }
 
         .cta-content h2 {
           font-family: var(--font-display);
-          font-size: clamp(2rem, 4vw, 2.75rem);
+          font-size: clamp(2rem, 4vw, 2.5rem);
           font-weight: 700;
           letter-spacing: -0.02em;
           margin-bottom: 1.5rem;
@@ -932,70 +593,36 @@ function LandingPage() {
         .cta-content p {
           color: var(--neutral-600);
           font-size: 1.125rem;
-          margin-bottom: 2.5rem;
-          line-height: 1.7;
+          margin-bottom: 2rem;
         }
 
         .cta-button-large {
           background: var(--blue-20);
           color: var(--white-50);
           border: none;
-          padding: 1.25rem 3.5rem;
+          padding: 1rem 3rem;
           font-size: 1.125rem;
-          font-weight: 600;
+          font-weight: 500;
           cursor: pointer;
-          transition: all var(--transition-base);
-          border-radius: 16px;
-          box-shadow: var(--shadow-md);
-          position: relative;
-          overflow: hidden;
-        }
-
-        .cta-button-large::before {
-          content: '';
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          width: 0;
-          height: 0;
-          border-radius: 50%;
-          background: rgba(255, 255, 255, 0.3);
-          transform: translate(-50%, -50%);
-          transition: width 1s, height 1s;
-        }
-
-        .cta-button-large:hover::before {
-          width: 500px;
-          height: 500px;
+          transition: all 0.2s;
         }
 
         .cta-button-large:hover {
           background: var(--blue-dark);
-          transform: translateY(-3px);
-          box-shadow: var(--shadow-2xl);
+          transform: translateY(-2px);
+          box-shadow: var(--shadow-xl);
         }
 
-        /* Premium Footer */
+        /* Footer */
         .footer {
           background: var(--black-40);
           color: var(--white-50);
-          padding: 5rem 2rem 2rem;
-          position: relative;
-        }
-
-        .footer::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 1px;
-          background: linear-gradient(90deg, transparent, var(--blue-20), transparent);
+          padding: 4rem 2rem 2rem;
         }
 
         @media (min-width: 768px) {
           .footer {
-            padding: 5rem 4rem 2rem;
+            padding: 4rem 4rem 2rem;
           }
         }
 
@@ -1004,8 +631,8 @@ function LandingPage() {
           margin: 0 auto;
           display: grid;
           grid-template-columns: 1fr;
-          gap: 3rem;
-          margin-bottom: 4rem;
+          gap: 2rem;
+          margin-bottom: 3rem;
         }
 
         @media (min-width: 768px) {
@@ -1021,7 +648,6 @@ function LandingPage() {
           font-weight: 800;
           margin-bottom: 1rem;
           color: var(--white-50);
-          letter-spacing: -0.02em;
         }
 
         .footer-logo span {
@@ -1031,39 +657,30 @@ function LandingPage() {
         .footer-desc {
           color: var(--neutral-400);
           font-size: 0.875rem;
-          line-height: 1.7;
-          margin-bottom: 2rem;
-          max-width: 300px;
+          line-height: 1.6;
+          margin-bottom: 1.5rem;
         }
 
         .footer-social {
           display: flex;
-          gap: 0.75rem;
+          gap: 1.5rem;
         }
 
         .social-link {
           color: var(--neutral-400);
           font-size: 0.875rem;
           cursor: pointer;
-          transition: all var(--transition-fast);
-          background: rgba(255, 255, 255, 0.03);
-          padding: 0.5rem 1rem;
-          border-radius: 8px;
-          border: 1px solid rgba(255, 255, 255, 0.05);
+          transition: color 0.2s;
         }
 
         .social-link:hover {
-          color: var(--white-50);
-          background: var(--blue-20);
-          border-color: var(--blue-20);
-          transform: translateY(-2px);
-          box-shadow: var(--shadow-md);
+          color: var(--blue-20);
         }
 
         .footer-col h4 {
           font-size: 0.875rem;
           font-weight: 600;
-          margin-bottom: 1.5rem;
+          margin-bottom: 1.25rem;
           color: var(--white-50);
           text-transform: uppercase;
           letter-spacing: 0.05em;
@@ -1074,25 +691,24 @@ function LandingPage() {
           color: var(--neutral-400);
           text-decoration: none;
           font-size: 0.875rem;
-          margin-bottom: 0.875rem;
+          margin-bottom: 0.75rem;
           cursor: pointer;
-          transition: all var(--transition-fast);
+          transition: color 0.2s;
         }
 
         .footer-link:hover {
           color: var(--blue-20);
-          transform: translateX(4px);
         }
 
         .footer-bottom {
           max-width: 1280px;
           margin: 0 auto;
           padding-top: 2rem;
-          border-top: 1px solid rgba(255, 255, 255, 0.05);
+          border-top: 1px solid var(--neutral-800);
           display: flex;
           flex-direction: column;
           gap: 1rem;
-          color: var(--neutral-500);
+          color: var(--neutral-400);
           font-size: 0.8125rem;
         }
 
@@ -1111,12 +727,18 @@ function LandingPage() {
 
         .footer-bottom-links span {
           cursor: pointer;
-          transition: color var(--transition-fast);
-          color: var(--neutral-500);
+          transition: color 0.2s;
         }
 
         .footer-bottom-links span:hover {
           color: var(--blue-20);
+        }
+
+        .footer-tagline {
+          text-align: center;
+          margin-top: 3rem;
+          color: var(--neutral-500);
+          font-size: 0.8125rem;
         }
 
         /* Responsive */
@@ -1128,10 +750,6 @@ function LandingPage() {
           
           .btn-primary-large, .btn-secondary-large {
             width: 100%;
-          }
-          
-          .trust-line::before {
-            display: none;
           }
         }
       `}</style>
@@ -1178,7 +796,7 @@ function LandingPage() {
               </button>
             </div>
             <div className="trust-line">
-              Join 10,000+ engineers showcasing their work
+              Join 10,000+ engineers showcasing their work through live project demonstrations
             </div>
           </div>
           <div className="hero-right">
@@ -1216,17 +834,17 @@ function LandingPage() {
 
           <div className="problem-grid">
             <div className="problem-card">
-              <div className="problem-icon">01</div>
+              <div className="problem-number">01</div>
               <h3>GitHub shows code without context</h3>
               <p>Recruiters don't have time to download, setup, and run your projects. They need instant evaluation.</p>
             </div>
             <div className="problem-card">
-              <div className="problem-icon">02</div>
+              <div className="problem-number">02</div>
               <h3>Resumes list skills without proof</h3>
               <p>Anyone can claim knowledge. Live projects prove you can actually build.</p>
             </div>
             <div className="problem-card">
-              <div className="problem-icon">03</div>
+              <div className="problem-number">03</div>
               <h3>Fake projects are common</h3>
               <p>Without live verification, copied projects look the same as real work.</p>
             </div>
@@ -1237,39 +855,39 @@ function LandingPage() {
       {/* Features Section */}
       <section id="features" className="features-section">
         <div className="section-container">
-          <div className="section-header" style={{ textAlign: 'center', margin: '0 auto 4rem' }}>
+          <div className="section-header" style={{ textAlign: 'center', margin: '0 auto 3rem' }}>
             <h2>Built for engineers who mean business</h2>
             <p>Every feature designed to showcase real engineering work.</p>
           </div>
 
           <div className="features-grid">
             <div className="feature-card">
-              <div className="feature-icon">01</div>
+              <div className="feature-number">01</div>
               <h3>Live Project Demo</h3>
               <p>Each project includes a working deployment link so recruiters can test it instantly.</p>
             </div>
             <div className="feature-card">
-              <div className="feature-icon">02</div>
+              <div className="feature-number">02</div>
               <h3>Project Authenticity Check</h3>
               <p>Live demos + GitHub activity verification helps reduce fake or copied projects.</p>
             </div>
             <div className="feature-card">
-              <div className="feature-icon">03</div>
+              <div className="feature-number">03</div>
               <h3>Single Portfolio Link</h3>
               <p>One public profile link to share in job applications instead of just a resume.</p>
             </div>
             <div className="feature-card">
-              <div className="feature-icon">04</div>
+              <div className="feature-number">04</div>
               <h3>Internship Drives</h3>
               <p>Startups and companies evaluate students by directly checking live projects.</p>
             </div>
             <div className="feature-card">
-              <div className="feature-icon">05</div>
+              <div className="feature-number">05</div>
               <h3>Like & Feedback</h3>
               <p>Projects receive reactions and feedback to reflect engagement and appreciation.</p>
             </div>
             <div className="feature-card">
-              <div className="feature-icon">06</div>
+              <div className="feature-number">06</div>
               <h3>Connect Feature</h3>
               <p>Students and recruiters connect for collaboration, internships, or hiring.</p>
             </div>
@@ -1280,23 +898,23 @@ function LandingPage() {
       {/* Audience Section */}
       <section id="audience" className="audience-section">
         <div className="section-container">
-          <div className="section-header" style={{ textAlign: 'center', margin: '0 auto 4rem' }}>
+          <div className="section-header" style={{ textAlign: 'center', margin: '0 auto 3rem' }}>
             <h2>Who is this platform for?</h2>
           </div>
 
           <div className="audience-grid">
             <div className="audience-card">
-              <div className="audience-icon">01</div>
+              <div className="audience-number">01</div>
               <h3>Engineering Students</h3>
               <p>Present your real work professionally and stand out from the crowd with live, verified projects.</p>
             </div>
             <div className="audience-card">
-              <div className="audience-icon">02</div>
+              <div className="audience-number">02</div>
               <h3>Recruiters & Companies</h3>
               <p>Quickly evaluate working projects during internships and placements without running any code.</p>
             </div>
             <div className="audience-card">
-              <div className="audience-icon">03</div>
+              <div className="audience-number">03</div>
               <h3>Training & Placement Cells</h3>
               <p>Simplify campus hiring with verified student project portfolios and direct recruiter connections.</p>
             </div>
@@ -1307,15 +925,13 @@ function LandingPage() {
       {/* Project Types Section */}
       <section className="project-types-section">
         <div className="section-container">
-          <h2 style={{ fontSize: 'clamp(2rem, 4vw, 2.75rem)', fontWeight: 700 }}>Supported Project Types</h2>
+          <h2>Supported Project Types</h2>
           <div className="tags-container">
             {[
               "Software Engineering Projects",
               "Full-Stack Web Applications",
               "AI/ML Deployable Applications",
-              "SaaS/Web-based Systems",
-              "Mobile Applications",
-              "API Development"
+              "SaaS/Web-based Systems"
             ].map((item, i) => (
               <span key={i} className="tag">{item}</span>
             ))}

@@ -2,494 +2,561 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 function Signup() {
-  const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    agreeToTerms: false
-  });
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value
-    }));
-  };
+const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle signup logic here
-    console.log("Signup attempt", formData);
-  };
+const [formData,setFormData]=useState({
+fullName:"",
+email:"",
+password:"",
+confirmPassword:""
+})
 
-  return (
-    <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+const handleChange=(e)=>{
+setFormData({...formData,[e.target.name]:e.target.value})
+}
 
-        :root {
-          --bg-primary: #FFFFFF;
-          --bg-secondary: #FAFAFA;
-          --bg-tertiary: #F5F5F5;
-          --text-primary: #1A1A1A;
-          --text-secondary: #666666;
-          --text-muted: #999999;
-          --accent-blue: #2962FF;
-          --accent-hover: #1E4BD8;
-          --accent-green: #00C853;
-          --border-light: #E5E5E5;
-          --border-subtle: #F0F0F0;
-          --shadow-sm: 0 2px 4px rgba(0,0,0,0.02);
-          --shadow-md: 0 4px 12px rgba(0,0,0,0.03);
-          --shadow-lg: 0 8px 24px rgba(0,0,0,0.04);
-          --font-display: 'Space Grotesk', sans-serif;
-          --font-body: 'Inter', sans-serif;
-        }
+const handleSubmit=(e)=>{
+e.preventDefault()
+console.log(formData)
+}
 
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-        }
+return(
+<>
 
-        body {
-          font-family: var(--font-body);
-          background: var(--bg-primary);
-          color: var(--text-primary);
-        }
+<style>{`
 
-        .signup-container {
-          min-height: 100vh;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 24px;
-          background: linear-gradient(135deg, #F5F9FF, white);
-          font-family: var(--font-body);
-        }
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family: 'Inter', sans-serif;
+}
 
-        .signup-card {
-          background: white;
-          border-radius: 24px;
-          box-shadow: var(--shadow-lg);
-          width: 100%;
-          max-width: 480px;
-          overflow: hidden;
-          border: 1px solid var(--border-light);
-        }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
-        .signup-header {
-          padding: 48px 48px 24px 48px;
-        }
+.page{
+display:flex;
+height:100vh;
+}
 
-        .signup-header h2 {
-          font-family: var(--font-display);
-          font-size: 32px;
-          font-weight: 700;
-          color: var(--text-primary);
-          text-align: center;
-          margin: 0 0 8px 0;
-          letter-spacing: -0.5px;
-        }
+/* LEFT SIDE */
 
-        .signup-header p {
-          color: var(--text-secondary);
-          text-align: center;
-          margin: 0;
-          font-size: 16px;
-        }
+.left{
+width:50%;
+background:linear-gradient(135deg,#2F6FE4,#5B8FF9);
+color:white;
+padding:60px 80px;
+display:flex;
+flex-direction:column;
+justify-content:space-between;
+}
 
-        .signup-form {
-          padding: 0 48px 40px 48px;
-        }
+.logo{
+font-size:20px;
+font-weight:600;
+font-family: 'Plus Jakarta Sans', sans-serif;
+}
 
-        .form-group {
-          margin-bottom: 20px;
-        }
+.hero{
+margin-top:40px;
+}
 
-        .form-label {
-          display: block;
-          color: var(--text-primary);
-          font-size: 14px;
-          font-weight: 500;
-          margin-bottom: 8px;
-        }
+.hero h1{
+font-size:54px;
+line-height:1.05;
+font-weight:800;
+margin-bottom:24px;
+font-family: 'Plus Jakarta Sans', sans-serif;
+}
 
-        .input-wrapper {
-          position: relative;
-        }
+.hero p{
+font-size:18px;
+line-height:1.6;
+opacity:.95;
+max-width:460px;
+font-family: 'Inter', sans-serif;
+}
 
-        .input-icon {
-          position: absolute;
-          left: 14px;
-          top: 50%;
-          transform: translateY(-50%);
-          color: var(--text-muted);
-          font-size: 18px;
-        }
+/* Illustration */
 
-        .form-input {
-          width: 100%;
-          border: 1.5px solid var(--border-light);
-          border-radius: 8px;
-          padding: 14px 14px 14px 44px;
-          font-size: 15px;
-          color: var(--text-primary);
-          outline: none;
-          transition: all 0.2s ease;
-          font-family: var(--font-body);
-          background: var(--bg-secondary);
-        }
+.illustration{
+margin-top:55px;
+width:460px;
+padding:28px;
+border-radius:24px;
+background:rgba(255,255,255,0.15);
+backdrop-filter:blur(10px);
+border:1px solid rgba(255,255,255,.3);
+}
 
-        .form-input:focus {
-          border-color: var(--accent-blue);
-          background: white;
-          box-shadow: 0 0 0 4px rgba(41, 98, 255, 0.1);
-        }
+.profile{
+display:flex;
+gap:14px;
+align-items:center;
+margin-bottom:20px;
+}
 
-        .form-input::placeholder {
-          color: var(--text-muted);
-          font-size: 14px;
-        }
+.avatar{
+width:48px;
+height:48px;
+border-radius:50%;
+background:rgba(255,255,255,0.25);
+border:2px solid white;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:24px;
+}
 
-        .password-hint {
-          font-size: 12px;
-          color: var(--text-muted);
-          margin-top: 6px;
-          display: flex;
-          align-items: center;
-          gap: 4px;
-        }
+/* User icon set to black */
+.avatar .user-icon{
+font-size:28px;
+color: #000000;
+font-weight:normal;
+line-height:1;
+}
 
-        .terms-checkbox {
-          display: flex;
-          align-items: flex-start;
-          gap: 10px;
-          cursor: pointer;
-          margin: 16px 0 20px 0;
-        }
+.bar{
+height:8px;
+background:white;
+opacity:.7;
+border-radius:5px;
+margin:6px 0;
+}
 
-        .checkbox-input {
-          width: 18px;
-          height: 18px;
-          cursor: pointer;
-          accent-color: var(--accent-blue);
-          margin-top: 2px;
-        }
+.rowCards{
+display:flex;
+gap:20px;
+margin-top:18px;
+}
 
-        .terms-text {
-          color: var(--text-secondary);
-          font-size: 14px;
-          line-height: 1.5;
-        }
+.smallCard{
+flex:1;
+height:85px;
+border-radius:16px;
+background:rgba(255,255,255,.25);
+}
 
-        .terms-link {
-          color: var(--accent-blue);
-          text-decoration: none;
-          font-weight: 500;
-          transition: color 0.2s;
-        }
+.footer{
+font-size:13px;
+opacity:.8;
+}
 
-        .terms-link:hover {
-          color: var(--accent-hover);
-          text-decoration: underline;
-        }
 
-        .btn-primary {
-          width: 100%;
-          background: var(--accent-blue);
-          color: white;
-          font-weight: 500;
-          padding: 14px 16px;
-          border: none;
-          border-radius: 8px;
-          font-size: 16px;
-          cursor: pointer;
-          transition: all 0.2s;
-          font-family: var(--font-body);
-          box-shadow: var(--shadow-sm);
-        }
+/* RIGHT SIDE */
 
-        .btn-primary:hover {
-          background: var(--accent-hover);
-          transform: translateY(-1px);
-          box-shadow: var(--shadow-md);
-        }
+.right{
+width:50%;
+background:white;
+display:flex;
+align-items:center;
+justify-content:center;
+}
 
-        .btn-primary:active {
-          transform: translateY(0);
-        }
+/* CREATE ACCOUNT CARD */
 
-        .login-text {
-          text-align: center;
-          color: var(--text-secondary);
-          margin: 20px 0 24px 0;
-          font-size: 15px;
-        }
+.card{
+width:460px;
+background:white;
+}
 
-        .login-link {
-          color: var(--accent-blue);
-          font-weight: 600;
-          text-decoration: none;
-          transition: color 0.2s;
-        }
+/* BADGE */
 
-        .login-link:hover {
-          color: var(--accent-hover);
-          text-decoration: underline;
-        }
+.badge{
+display:inline-block;
+padding:0;
+background:transparent;
+color: #2563EB;
+font-size:14px;
+font-weight:600;
+letter-spacing:0.5px;
+margin-bottom:12px;
+text-transform:uppercase;
+font-family: 'Inter', sans-serif;
+}
 
-        .divider {
-          position: relative;
-          margin: 24px 0 28px 0;
-        }
+/* TITLE */
 
-        .divider-line {
-          position: absolute;
-          inset: 0;
-          display: flex;
-          align-items: center;
-        }
+.card h2{
+font-size:32px;
+font-weight:700;
+color: #0A0A0A;
+margin-bottom:8px;
+font-family: 'Plus Jakarta Sans', sans-serif;
+letter-spacing:-0.02em;
+}
 
-        .divider-line div {
-          width: 100%;
-          border-top: 1px solid var(--border-light);
-        }
+/* SUBTITLE */
 
-        .divider-text {
-          position: relative;
-          display: flex;
-          justify-content: center;
-        }
+.subtitle{
+color:#6B7280;
+font-size:14px;
+margin-bottom:32px;
+font-family: 'Inter', sans-serif;
+}
 
-        .divider-text span {
-          background: white;
-          padding: 0 16px;
-          color: var(--text-muted);
-          font-size: 14px;
-        }
+/* LABEL */
 
-        .social-buttons {
-          display: flex;
-          gap: 12px;
-        }
+label{
+font-size:14px;
+font-weight:500;
+color: #0A0A0A;
+margin-bottom:6px;
+display:block;
+font-family: 'Inter', sans-serif;
+}
 
-        .btn-social {
-          flex: 1;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 10px;
-          background: white;
-          border: 1.5px solid var(--border-light);
-          border-radius: 8px;
-          padding: 12px;
-          cursor: pointer;
-          font-size: 15px;
-          color: var(--text-secondary);
-          transition: all 0.2s;
-          font-weight: 500;
-        }
+/* INPUT */
 
-        .btn-social:hover {
-          border-color: var(--accent-blue);
-          color: var(--accent-blue);
-          background: var(--bg-secondary);
-          transform: translateY(-1px);
-          box-shadow: var(--shadow-sm);
-        }
+.inputBox{
+margin-bottom:20px;
+}
 
-        .btn-social:active {
-          transform: translateY(0);
-        }
+input{
+width:100%;
+padding:12px 14px;
+border-radius:0px;
+border:1px solid #E5E7EB;
+background:white;
+font-size:14px;
+outline:none;
+transition: all 0.2s ease;
+font-family: 'Inter', sans-serif;
+}
 
-        .social-icon {
-          font-size: 18px;
-        }
+input:focus{
+border-color: #2563EB;
+box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
 
-        .back-to-home {
-          text-align: center;
-          margin-top: 24px;
-        }
+input::placeholder{
+color:#9CA3AF;
+font-size:14px;
+}
 
-        .back-link {
-          color: var(--text-muted);
-          font-size: 14px;
-          text-decoration: none;
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          transition: color 0.2s;
-        }
+/* PASSWORD ROW */
 
-        .back-link:hover {
-          color: var(--accent-blue);
-        }
+.flexRow{
+display:flex;
+gap:12px;
+margin-top:0;
+}
 
-        @media (max-width: 480px) {
-          .signup-header {
-            padding: 40px 24px 20px 24px;
-          }
-          
-          .signup-form {
-            padding: 0 24px 32px 24px;
-          }
-          
-          .signup-header h2 {
-            font-size: 28px;
-          }
-          
-          .social-buttons {
-            flex-direction: column;
-          }
-        }
-      `}</style>
+.flexRow > div {
+flex:1;
+}
 
-      <div className="signup-container">
-        <div className="signup-card">
-          <div className="signup-header">
-            <h2>Create account</h2>
-            <p>Join tech<span style={{ color: 'var(--accent-blue)' }}>foliyo</span> today</p>
-          </div>
+/* CREATE ACCOUNT BUTTON - SQUARE */
 
-          <div className="signup-form">
-            <form onSubmit={handleSubmit}>
-              {/* Full Name Field */}
-              <div className="form-group">
-                <label className="form-label">Full name</label>
-                <div className="input-wrapper">
-                  <span className="input-icon">👤</span>
-                  <input
-                    type="text"
-                    name="fullName"
-                    className="form-input"
-                    placeholder="John Doe"
-                    value={formData.fullName}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              </div>
+.button{
+margin-top:24px;
+width:100%;
+padding:14px 20px;
+border-radius:0px;
+border:none;
+background: #0A0A0A;
+color: white;
+font-size:15px;
+font-weight:500;
+cursor:pointer;
+transition: all 0.2s ease;
+font-family: 'Inter', sans-serif;
+box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
 
-              {/* Email Field */}
-              <div className="form-group">
-                <label className="form-label">Email address</label>
-                <div className="input-wrapper">
-                  <span className="input-icon">✉️</span>
-                  <input
-                    type="email"
-                    name="email"
-                    className="form-input"
-                    placeholder="you@example.com"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              </div>
+.button:hover{
+background: #1A1A1A;
+transform: translateY(-2px);
+box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
 
-              {/* Password Field */}
-              <div className="form-group">
-                <label className="form-label">Password</label>
-                <div className="input-wrapper">
-                  <span className="input-icon">🔒</span>
-                  <input
-                    type="password"
-                    name="password"
-                    className="form-input"
-                    placeholder="Create a password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div className="password-hint">
-                  <span>📋</span>
-                  <span>At least 8 characters with a number and letter</span>
-                </div>
-              </div>
+/* DIVIDER */
 
-              {/* Confirm Password Field */}
-              <div className="form-group">
-                <label className="form-label">Confirm password</label>
-                <div className="input-wrapper">
-                  <span className="input-icon">✓</span>
-                  <input
-                    type="password"
-                    name="confirmPassword"
-                    className="form-input"
-                    placeholder="Confirm your password"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              </div>
+.divider{
+position:relative;
+text-align:center;
+margin:24px 0;
+}
 
-              {/* Terms Checkbox */}
-              <label className="terms-checkbox">
-                <input 
-                  type="checkbox"
-                  name="agreeToTerms"
-                  className="checkbox-input"
-                  checked={formData.agreeToTerms}
-                  onChange={handleChange}
-                  required
-                />
-                <span className="terms-text">
-                  I agree to the{' '}
-                  <a href="#" className="terms-link">Terms of Service</a>{' '}
-                  and{' '}
-                  <a href="#" className="terms-link">Privacy Policy</a>
-                </span>
-              </label>
+.divider::before{
+content:'';
+position:absolute;
+top:50%;
+left:0;
+right:0;
+height:1px;
+background:#E5E7EB;
+z-index:1;
+}
 
-              {/* Sign Up Button */}
-              <button type="submit" className="btn-primary">
-                Create account
-              </button>
-            </form>
+.divider span{
+background:white;
+padding:0 16px;
+color:#6B7280;
+font-size:12px;
+font-weight:500;
+position:relative;
+z-index:2;
+font-family: 'Inter', sans-serif;
+text-transform:uppercase;
+letter-spacing:0.5px;
+}
 
-            <p className="login-text">
-              Already have an account?{' '}
-              <a href="/login" className="login-link">
-                Sign in
-              </a>
-            </p>
+/* SOCIAL BUTTONS */
 
-            <div className="divider">
-              <div className="divider-line">
-                <div></div>
-              </div>
-              <div className="divider-text">
-                <span>Or sign up with</span>
-              </div>
-            </div>
+.socialRow{
+display:flex;
+gap:12px;
+margin:20px 0 28px 0;
+}
 
-            <div className="social-buttons">
-              <button className="btn-social">
-                <span className="social-icon">G</span>
-                <span>Google</span>
-              </button>
-              <button className="btn-social">
-                <span className="social-icon">⌨️</span>
-                <span>GitHub</span>
-              </button>
-            </div>
+.social{
+flex:1;
+padding:16px;
+border-radius:0px;
+border:1px solid #E5E7EB;
+background:#F9FAFB;
+color:#374151;
+font-weight:600;
+cursor:pointer;
+transition:0.2s;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:8px;
+}
 
-            <div className="back-to-home">
-              <a href="/" className="back-link">
-                ← Back to home
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
-  );
+.social:hover{
+background:white;
+border:1px solid #D1D5DB;
+transform:translateY(-2px);
+}
+
+.social-icon{
+font-size:16px;
+}
+
+/* LOGIN */
+
+.login{
+margin-top:20px;
+text-align:center;
+font-size:14px;
+color:#6B7280;
+font-family: 'Inter', sans-serif;
+}
+
+.login span{
+color: #2563EB;
+cursor:pointer;
+font-weight:600;
+margin-left:4px;
+transition: color 0.2s ease;
+}
+
+.login span:hover{
+color: #1D4ED8;
+text-decoration:underline;
+}
+
+`}</style>
+
+
+<div className="page">
+
+
+{/* LEFT */}
+
+<div className="left">
+
+<div>
+
+<div className="logo">
+Techfoliyo
+</div>
+
+<div className="hero">
+
+<h1>
+Showcase Your<br/>
+Projects Like a Pro
+</h1>
+
+<p>
+Techfoliyo helps tech professionals build stunning
+portfolios in minutes with automated project syncing
+and custom themes.
+</p>
+
+<div className="illustration">
+
+<div className="profile">
+
+{/* AVATAR CIRCLE - with black user icon */}
+<div className="avatar">
+<span className="user-icon">👤</span>
+</div>
+
+<div>
+<div className="bar" style={{width:"140px"}}></div>
+<div className="bar" style={{width:"100px"}}></div>
+</div>
+
+</div>
+
+
+<div className="rowCards">
+
+<div className="smallCard"></div>
+<div className="smallCard"></div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div className="footer">
+© 2024 Techfoliyo Inc. All rights reserved.
+</div>
+
+</div>
+
+
+
+{/* RIGHT */}
+
+<div className="right">
+
+<div className="card">
+
+{/* Badge */}
+<div className="badge">
+WELCOME TO TECHFOLIYO
+</div>
+
+<h2>Create Account</h2>
+
+<div className="subtitle">
+Join thousands of developers showcasing their best work.
+</div>
+
+
+<form onSubmit={handleSubmit}>
+
+<label>Full Name</label>
+
+<div className="inputBox">
+<input
+name="fullName"
+placeholder="Alex Rivera"
+value={formData.fullName}
+onChange={handleChange}
+/>
+</div>
+
+
+<label>Email Address</label>
+
+<div className="inputBox">
+<input
+name="email"
+placeholder="alex@example.com"
+value={formData.email}
+onChange={handleChange}
+/>
+</div>
+
+
+<div className="flexRow">
+
+<div>
+
+<label>Password</label>
+
+<div className="inputBox">
+<input
+type="password"
+name="password"
+placeholder="••••••••"
+value={formData.password}
+onChange={handleChange}
+/>
+</div>
+
+</div>
+
+
+<div>
+
+<label>Confirm</label>
+
+<div className="inputBox">
+<input
+type="password"
+name="confirmPassword"
+placeholder="••••••••"
+value={formData.confirmPassword}
+onChange={handleChange}
+/>
+</div>
+
+</div>
+
+</div>
+
+
+{/* Create Account Button */}
+<button className="button" type="submit">
+Create Account →
+</button>
+
+</form>
+
+
+<div className="divider">
+<span>OR CONTINUE WITH</span>
+</div>
+
+
+{/* Social Buttons */}
+<div className="socialRow">
+
+<button className="social" type="button">
+<span className="social-icon">G</span>
+<span>Google</span>
+</button>
+
+<button className="social" type="button">
+<span className="social-icon">⌨️</span>
+<span>GitHub</span>
+</button>
+
+</div>
+
+
+<div className="login">
+
+Already have an account?
+<span onClick={()=>navigate("/login")}>
+Log in
+</span>
+
+</div>
+
+
+</div>
+
+</div>
+
+</div>
+
+</>
+)
+
 }
 
 export default Signup;
