@@ -364,7 +364,7 @@ text-decoration:underline;
 <div className="page">
 
 
-{/* LEFT */}
+{/* LEFT - Updated with requested changes */}
 
 <div className="left">
 
@@ -378,14 +378,11 @@ Techfoliyo
 
 <h1>
 Showcase Your<br/>
-Projects Like a Pro
+Projects with Techfoliyo
 </h1>
 
 <p>
-Techfoliyo helps tech professionals build stunning
-portfolios in minutes with automated project syncing
-and custom themes.
-</p>
+Stop sharing just code. Make your work in action.</p>
 
 <div className="illustration">
 
@@ -439,7 +436,7 @@ WELCOME TO TECHFOLIYO
 <h2>Create Account</h2>
 
 <div className="subtitle">
-Join thousands of developers showcasing their best work.
+Join thousands of engineers showcasing their best work.
 </div>
 
 
@@ -524,12 +521,12 @@ Create Account →
 <div className="socialRow">
 
 <button className="social" type="button">
-<span className="social-icon">G</span>
+<span className="social-icon"></span>
 <span>Google</span>
 </button>
 
 <button className="social" type="button">
-<span className="social-icon">⌨️</span>
+<span className="social-icon"></span>
 <span>GitHub</span>
 </button>
 

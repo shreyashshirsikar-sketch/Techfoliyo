@@ -2,428 +2,570 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 function Login() {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle login logic here
-    console.log("Login attempt", { email, password, rememberMe });
-  };
+const navigate = useNavigate();
 
-  return (
-    <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+const [formData,setFormData]=useState({
+email:"",
+password:"",
+rememberMe:false
+})
 
-        :root {
-          --bg-primary: #FFFFFF;
-          --bg-secondary: #FAFAFA;
-          --bg-tertiary: #F5F5F5;
-          --text-primary: #1A1A1A;
-          --text-secondary: #666666;
-          --text-muted: #999999;
-          --accent-blue: #2962FF;
-          --accent-hover: #1E4BD8;
-          --accent-green: #00C853;
-          --border-light: #E5E5E5;
-          --border-subtle: #F0F0F0;
-          --shadow-sm: 0 2px 4px rgba(0,0,0,0.02);
-          --shadow-md: 0 4px 12px rgba(0,0,0,0.03);
-          --shadow-lg: 0 8px 24px rgba(0,0,0,0.04);
-          --font-display: 'Space Grotesk', sans-serif;
-          --font-body: 'Inter', sans-serif;
-        }
+const handleChange=(e)=>{
+const {name,value,type,checked}=e.target
+setFormData({...formData,[name]:type==="checkbox"?checked:value})
+}
 
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-        }
+const handleSubmit=(e)=>{
+e.preventDefault()
+console.log(formData)
+}
 
-        body {
-          font-family: var(--font-body);
-          background: var(--bg-primary);
-          color: var(--text-primary);
-        }
+return(
+<>
 
-        .login-container {
-          min-height: 100vh;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 24px;
-          background: linear-gradient(135deg, #F5F9FF, white);
-          font-family: var(--font-body);
-        }
+<style>{`
 
-        .login-card {
-          background: white;
-          border-radius: 24px;
-          box-shadow: var(--shadow-lg);
-          width: 100%;
-          max-width: 440px;
-          overflow: hidden;
-          border: 1px solid var(--border-light);
-        }
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family: 'Inter', sans-serif;
+}
 
-        .login-header {
-          padding: 48px 48px 24px 48px;
-        }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
-        .login-header h2 {
-          font-family: var(--font-display);
-          font-size: 32px;
-          font-weight: 700;
-          color: var(--text-primary);
-          text-align: center;
-          margin: 0 0 8px 0;
-          letter-spacing: -0.5px;
-        }
+.page{
+display:flex;
+height:100vh;
+}
 
-        .login-header p {
-          color: var(--text-secondary);
-          text-align: center;
-          margin: 0;
-          font-size: 16px;
-        }
+/* LEFT SIDE - Blue gradient colors */
+.left{
+width:50%;
+background:linear-gradient(135deg,#2F6FE4,#5B8FF9);
+color:white;
+padding:60px 80px;
+display:flex;
+flex-direction:column;
+justify-content:space-between;
+}
 
-        .login-form {
-          padding: 0 48px 40px 48px;
-        }
+.logo{
+font-size:20px;
+font-weight:600;
+font-family: 'Plus Jakarta Sans', sans-serif;
+}
 
-        .form-group {
-          margin-bottom: 24px;
-        }
+.hero{
+margin-top:40px;
+}
 
-        .form-label {
-          display: block;
-          color: var(--text-primary);
-          font-size: 14px;
-          font-weight: 500;
-          margin-bottom: 8px;
-        }
+.hero h1{
+font-size:54px;
+line-height:1.05;
+font-weight:800;
+margin-bottom:24px;
+font-family: 'Plus Jakarta Sans', sans-serif;
+}
 
-        .input-wrapper {
-          position: relative;
-        }
+.hero p{
+font-size:18px;
+line-height:1.6;
+opacity:.95;
+max-width:460px;
+font-family: 'Inter', sans-serif;
+}
 
-        .input-icon {
-          position: absolute;
-          left: 14px;
-          top: 50%;
-          transform: translateY(-50%);
-          color: var(--text-muted);
-          font-size: 18px;
-        }
+/* Illustration */
 
-        .form-input {
-          width: 100%;
-          border: 1.5px solid var(--border-light);
-          border-radius: 8px;
-          padding: 14px 14px 14px 44px;
-          font-size: 15px;
-          color: var(--text-primary);
-          outline: none;
-          transition: all 0.2s ease;
-          font-family: var(--font-body);
-          background: var(--bg-secondary);
-        }
+.illustration{
+margin-top:55px;
+width:460px;
+padding:28px;
+border-radius:24px;
+background:rgba(255,255,255,0.15);
+backdrop-filter:blur(10px);
+border:1px solid rgba(255,255,255,.3);
+}
 
-        .form-input:focus {
-          border-color: var(--accent-blue);
-          background: white;
-          box-shadow: 0 0 0 4px rgba(41, 98, 255, 0.1);
-        }
+.profile{
+display:flex;
+gap:14px;
+align-items:center;
+margin-bottom:20px;
+}
 
-        .form-input::placeholder {
-          color: var(--text-muted);
-          font-size: 14px;
-        }
+.avatar{
+width:48px;
+height:48px;
+border-radius:50%;
+background:rgba(255,255,255,0.25);
+border:2px solid white;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:24px;
+}
 
-        .form-options {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 28px;
-        }
+/* User icon set to black */
+.avatar .user-icon{
+font-size:28px;
+color: #000000;
+font-weight:normal;
+line-height:1;
+}
 
-        .checkbox-label {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          cursor: pointer;
-          color: var(--text-secondary);
-          font-size: 14px;
-        }
+.bar{
+height:8px;
+background:white;
+opacity:.7;
+border-radius:5px;
+margin:6px 0;
+}
 
-        .checkbox-input {
-          width: 16px;
-          height: 16px;
-          cursor: pointer;
-          accent-color: var(--accent-blue);
-        }
+.rowCards{
+display:flex;
+gap:20px;
+margin-top:18px;
+}
 
-        .forgot-link {
-          color: var(--accent-blue);
-          font-size: 14px;
-          text-decoration: none;
-          font-weight: 500;
-          transition: color 0.2s;
-        }
+.smallCard{
+flex:1;
+height:85px;
+border-radius:16px;
+background:rgba(255,255,255,.25);
+}
 
-        .forgot-link:hover {
-          color: var(--accent-hover);
-          text-decoration: underline;
-        }
+.footer{
+font-size:13px;
+opacity:.8;
+}
 
-        .btn-primary {
-          width: 100%;
-          background: var(--accent-blue);
-          color: white;
-          font-weight: 500;
-          padding: 14px 16px;
-          border: none;
-          border-radius: 8px;
-          font-size: 16px;
-          cursor: pointer;
-          transition: all 0.2s;
-          font-family: var(--font-body);
-          box-shadow: var(--shadow-sm);
-        }
 
-        .btn-primary:hover {
-          background: var(--accent-hover);
-          transform: translateY(-1px);
-          box-shadow: var(--shadow-md);
-        }
+/* RIGHT SIDE */
 
-        .btn-primary:active {
-          transform: translateY(0);
-        }
+.right{
+width:50%;
+background:white;
+display:flex;
+align-items:center;
+justify-content:center;
+}
 
-        .signup-text {
-          text-align: center;
-          color: var(--text-secondary);
-          margin: 20px 0 24px 0;
-          font-size: 15px;
-        }
+/* LOGIN CARD */
 
-        .signup-link {
-          color: var(--accent-blue);
-          font-weight: 600;
-          text-decoration: none;
-          transition: color 0.2s;
-        }
+.card{
+width:460px;
+background:white;
+}
 
-        .signup-link:hover {
-          color: var(--accent-hover);
-          text-decoration: underline;
-        }
+/* BADGE - Same blue as left side */
+.badge{
+display:inline-block;
+padding:0;
+background:transparent;
+color: #2F6FE4;
+font-size:14px;
+font-weight:600;
+letter-spacing:0.5px;
+margin-bottom:12px;
+text-transform:uppercase;
+font-family: 'Inter', sans-serif;
+}
 
-        .divider {
-          position: relative;
-          margin: 24px 0 28px 0;
-        }
+/* TITLE */
 
-        .divider-line {
-          position: absolute;
-          inset: 0;
-          display: flex;
-          align-items: center;
-        }
+.card h2{
+font-size:32px;
+font-weight:700;
+color: #0A0A0A;
+margin-bottom:8px;
+font-family: 'Plus Jakarta Sans', sans-serif;
+letter-spacing:-0.02em;
+}
 
-        .divider-line div {
-          width: 100%;
-          border-top: 1px solid var(--border-light);
-        }
+/* SUBTITLE */
 
-        .divider-text {
-          position: relative;
-          display: flex;
-          justify-content: center;
-        }
+.subtitle{
+color:#6B7280;
+font-size:14px;
+margin-bottom:32px;
+font-family: 'Inter', sans-serif;
+}
 
-        .divider-text span {
-          background: white;
-          padding: 0 16px;
-          color: var(--text-muted);
-          font-size: 14px;
-          background: white;
-        }
+/* LABEL */
 
-        .social-buttons {
-          display: flex;
-          gap: 12px;
-        }
+label{
+font-size:14px;
+font-weight:500;
+color: #0A0A0A;
+margin-bottom:6px;
+display:block;
+font-family: 'Inter', sans-serif;
+}
 
-        .btn-social {
-          flex: 1;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 10px;
-          background: white;
-          border: 1.5px solid var(--border-light);
-          border-radius: 8px;
-          padding: 12px;
-          cursor: pointer;
-          font-size: 15px;
-          color: var(--text-secondary);
-          transition: all 0.2s;
-          font-weight: 500;
-        }
+/* INPUT */
 
-        .btn-social:hover {
-          border-color: var(--accent-blue);
-          color: var(--accent-blue);
-          background: var(--bg-secondary);
-          transform: translateY(-1px);
-          box-shadow: var(--shadow-sm);
-        }
+.inputBox{
+margin-bottom:20px;
+}
 
-        .btn-social:active {
-          transform: translateY(0);
-        }
+input{
+width:100%;
+padding:12px 14px;
+border-radius:0px;
+border:1px solid #E5E7EB;
+background:white;
+font-size:14px;
+outline:none;
+transition: all 0.2s ease;
+font-family: 'Inter', sans-serif;
+}
 
-        .social-icon {
-          font-size: 18px;
-        }
+input:focus{
+border-color: #2F6FE4;
+box-shadow: 0 0 0 4px rgba(47, 111, 228, 0.1);
+}
 
-        .back-to-home {
-          text-align: center;
-          margin-top: 24px;
-        }
+input::placeholder{
+color:#9CA3AF;
+font-size:14px;
+}
 
-        .back-link {
-          color: var(--text-muted);
-          font-size: 14px;
-          text-decoration: none;
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          transition: color 0.2s;
-        }
+/* REMEMBER ME & FORGOT PASSWORD ROW */
 
-        .back-link:hover {
-          color: var(--accent-blue);
-        }
+.optionsRow{
+display:flex;
+align-items:center;
+justify-content:space-between;
+margin:16px 0 24px 0;
+}
 
-        @media (max-width: 480px) {
-          .login-header {
-            padding: 40px 24px 20px 24px;
-          }
-          
-          .login-form {
-            padding: 0 24px 32px 24px;
-          }
-          
-          .login-header h2 {
-            font-size: 28px;
-          }
-          
-          .social-buttons {
-            flex-direction: column;
-          }
-        }
-      `}</style>
+.checkboxLabel{
+display:flex;
+align-items:center;
+gap:8px;
+cursor:pointer;
+color:#6B7280;
+font-size:14px;
+}
 
-      <div className="login-container">
-        <div className="login-card">
-          <div className="login-header">
-            <h2>Welcome back</h2>
-            <p>Sign in to continue to tech<span style={{ color: 'var(--accent-blue)' }}>foliyo</span></p>
-          </div>
+.checkbox{
+width:16px;
+height:16px;
+cursor:pointer;
+accent-color: #2F6FE4;
+}
 
-          <div className="login-form">
-            <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label className="form-label">Email address</label>
-                <div className="input-wrapper">
-                  <span className="input-icon">✉️</span>
-                  <input
-                    type="email"
-                    className="form-input"
-                    placeholder="you@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
+.forgotLink{
+color: #2F6FE4;
+font-size:14px;
+font-weight:500;
+cursor:pointer;
+text-decoration:none;
+transition:color 0.2s ease;
+}
 
-              <div className="form-group">
-                <label className="form-label">Password</label>
-                <div className="input-wrapper">
-                  <span className="input-icon">🔒</span>
-                  <input
-                    type="password"
-                    className="form-input"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
+.forgotLink:hover{
+color: #5B8FF9;
+text-decoration:underline;
+}
 
-              <div className="form-options">
-                <label className="checkbox-label">
-                  <input 
-                    type="checkbox" 
-                    className="checkbox-input"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                  />
-                  <span>Remember me</span>
-                </label>
-                <a href="#" className="forgot-link">Forgot password?</a>
-              </div>
+/* LOGIN BUTTON - SQUARE */
 
-              <button type="submit" className="btn-primary">
-                Sign in
-              </button>
-            </form>
+.button{
+margin-top:8px;
+width:100%;
+padding:14px 20px;
+border-radius:0px;
+border:none;
+background: #0A0A0A;
+color: white;
+font-size:15px;
+font-weight:500;
+cursor:pointer;
+transition: all 0.2s ease;
+font-family: 'Inter', sans-serif;
+box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
 
-            <p className="signup-text">
-              Don't have an account?{' '}
-              <a href="/signup" className="signup-link">
-                Create free account
-              </a>
-            </p>
+.button:hover{
+background: #1A1A1A;
+transform: translateY(-2px);
+box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
 
-            <div className="divider">
-              <div className="divider-line">
-                <div></div>
-              </div>
-              <div className="divider-text">
-                <span>Or continue with</span>
-              </div>
-            </div>
+/* DIVIDER */
 
-            <div className="social-buttons">
-              <button className="btn-social">
-                <span className="social-icon">G</span>
-                <span>Google</span>
-              </button>
-              <button className="btn-social">
-                <span className="social-icon">⌨️</span>
-                <span>GitHub</span>
-              </button>
-            </div>
+.divider{
+position:relative;
+text-align:center;
+margin:24px 0;
+}
 
-            <div className="back-to-home">
-              <a href="/" className="back-link">
-                ← Back to home
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
-  );
+.divider::before{
+content:'';
+position:absolute;
+top:50%;
+left:0;
+right:0;
+height:1px;
+background:#E5E7EB;
+z-index:1;
+}
+
+.divider span{
+background:white;
+padding:0 16px;
+color:#6B7280;
+font-size:12px;
+font-weight:500;
+position:relative;
+z-index:2;
+font-family: 'Inter', sans-serif;
+text-transform:uppercase;
+letter-spacing:0.5px;
+}
+
+/* SOCIAL BUTTONS */
+
+.socialRow{
+display:flex;
+gap:12px;
+margin:20px 0 28px 0;
+}
+
+.social{
+flex:1;
+padding:16px;
+border-radius:0px;
+border:1px solid #E5E7EB;
+background:#F9FAFB;
+color:#374151;
+font-weight:600;
+cursor:pointer;
+transition:0.2s;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:8px;
+}
+
+.social:hover{
+background:white;
+border:1px solid #D1D5DB;
+transform:translateY(-2px);
+}
+
+.social-icon{
+font-size:16px;
+}
+
+/* SIGNUP LINK - Now Blue */
+
+.signup-text{
+margin-top:20px;
+text-align:center;
+font-size:14px;
+color:#6B7280;
+font-family: 'Inter', sans-serif;
+}
+
+.signup-link{
+color: #2F6FE4;
+cursor:pointer;
+font-weight:600;
+margin-left:4px;
+transition: color 0.2s ease;
+}
+
+.signup-link:hover{
+color: #5B8FF9;
+text-decoration:underline;
+}
+
+`}</style>
+
+
+<div className="page">
+
+
+{/* LEFT - Same as Signup page */}
+
+<div className="left">
+
+<div>
+
+<div className="logo">
+Techfoliyo
+</div>
+
+<div className="hero">
+
+<h1>
+Showcase Your<br/>
+Projects with Techfoliyo
+</h1>
+
+<p>
+Stop sharing just code. Make your work in action.</p>
+
+<div className="illustration">
+
+<div className="profile">
+
+{/* AVATAR CIRCLE - with black user icon */}
+<div className="avatar">
+<span className="user-icon">👤</span>
+</div>
+
+<div>
+<div className="bar" style={{width:"140px"}}></div>
+<div className="bar" style={{width:"100px"}}></div>
+</div>
+
+</div>
+
+
+<div className="rowCards">
+
+<div className="smallCard"></div>
+<div className="smallCard"></div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div className="footer">
+© 2024 Techfoliyo Inc. All rights reserved.
+</div>
+
+</div>
+
+
+
+{/* RIGHT - Login Form */}
+
+<div className="right">
+
+<div className="card">
+
+{/* Badge */}
+<div className="badge">
+WELCOME BACK
+</div>
+
+<h2>Sign In</h2>
+
+<div className="subtitle">
+Access your portfolio and continue your journey.
+</div>
+
+
+<form onSubmit={handleSubmit}>
+
+<label>Email Address</label>
+
+<div className="inputBox">
+<input
+type="email"
+name="email"
+placeholder="alex@example.com"
+value={formData.email}
+onChange={handleChange}
+required
+/>
+</div>
+
+
+<label>Password</label>
+
+<div className="inputBox">
+<input
+type="password"
+name="password"
+placeholder="••••••••"
+value={formData.password}
+onChange={handleChange}
+required
+/>
+</div>
+
+
+{/* Remember Me & Forgot Password */}
+<div className="optionsRow">
+
+<label className="checkboxLabel">
+<input 
+type="checkbox"
+name="rememberMe"
+className="checkbox"
+checked={formData.rememberMe}
+onChange={handleChange}
+/>
+<span>Remember me</span>
+</label>
+
+<span className="forgotLink" onClick={()=>alert("Password reset functionality")}>
+Forgot password?
+</span>
+
+</div>
+
+
+{/* Sign In Button */}
+<button className="button" type="submit">
+Sign In →
+</button>
+
+</form>
+
+
+<div className="divider">
+<span>OR CONTINUE WITH</span>
+</div>
+
+
+{/* Social Buttons */}
+<div className="socialRow">
+
+<button className="social" type="button">
+<span className="social-icon"></span>
+<span>Google</span>
+</button>
+
+<button className="social" type="button">
+<span className="social-icon"></span>
+<span>GitHub</span>
+</button>
+
+</div>
+
+
+<div className="signup-text">
+
+Don't have an account?
+<span className="signup-link" onClick={()=>navigate("/signup")}>
+Sign up
+</span>
+
+</div>
+
+
+</div>
+
+</div>
+
+</div>
+
+</>
+)
+
 }
 
 export default Login;
