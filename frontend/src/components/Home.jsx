@@ -207,7 +207,7 @@ function Home() {
           -webkit-font-smoothing: antialiased;
         }
 
-        /* Navigation - Exactly like Landing Page */
+        /* Navigation */
         .nav {
           position: fixed;
           top: 0;
@@ -265,10 +265,11 @@ function Home() {
           align-items: center;
         }
 
+        /* Simple black icons using font characters */
         .icon-btn {
           background: transparent;
           border: none;
-          color: var(--neutral-600);
+          color: var(--black-40);
           font-size: 1.3rem;
           cursor: pointer;
           padding: 0.25rem;
@@ -277,6 +278,7 @@ function Home() {
           align-items: center;
           justify-content: center;
           line-height: 1;
+          font-family: 'Inter', sans-serif;
           font-weight: 300;
         }
 
@@ -284,7 +286,7 @@ function Home() {
           color: var(--blue-20);
         }
 
-        .btn-primary {
+        .btn-create {
           background: var(--black-40);
           color: var(--white-50);
           border: none;
@@ -292,12 +294,8 @@ function Home() {
           font-size: 0.9375rem;
           font-weight: 500;
           cursor: pointer;
-          transition: all 0.2s;
-          border-radius: 6px;
-        }
-
-        .btn-primary:hover {
-          background: var(--black-light);
+          border-radius: 0px;
+          transition: none;
         }
 
         .avatar {
@@ -311,7 +309,7 @@ function Home() {
           color: var(--neutral-600);
           font-size: 1rem;
           cursor: pointer;
-          transition: all 0.2s;
+          transition: color 0.2s;
         }
 
         .avatar:hover {
@@ -384,7 +382,7 @@ function Home() {
           font-size: 1rem;
         }
 
-        /* Filter Pills */
+        /* Filter Pills - All Blue */
         .filter-section {
           margin-bottom: 2rem;
         }
@@ -397,25 +395,14 @@ function Home() {
 
         .pill {
           padding: 0.5rem 1.25rem;
-          border-radius: 100px;
-          background: var(--white-50);
-          border: 1px solid var(--neutral-200);
-          color: var(--neutral-600);
+          border-radius: 0px;
+          background: var(--blue-20);
+          border: 1px solid var(--blue-20);
+          color: var(--white-50);
           font-size: 0.875rem;
           font-weight: 500;
           cursor: pointer;
-          transition: all 0.2s;
-        }
-
-        .pill:hover {
-          border-color: var(--blue-20);
-          color: var(--blue-20);
-        }
-
-        .pill.active {
-          background: var(--black-40);
-          color: var(--white-50);
-          border-color: var(--black-40);
+          transition: none;
         }
 
         /* Projects Grid */
@@ -444,20 +431,14 @@ function Home() {
           }
         }
 
-        /* Project Card */
+        /* Project Card - No hover effects */
         .project-card {
           background: var(--white-50);
           border: 1px solid var(--neutral-200);
           border-radius: 16px;
           overflow: hidden;
-          transition: all 0.2s;
           box-shadow: var(--shadow-sm);
-        }
-
-        .project-card:hover {
-          transform: translateY(-4px);
-          border-color: var(--blue-20);
-          box-shadow: var(--shadow-lg);
+          transition: none;
         }
 
         .project-image {
@@ -543,7 +524,7 @@ function Home() {
           gap: 0.25rem;
         }
 
-        /* Show More Button */
+        /* Show More Button - Square */
         .show-more-container {
           text-align: center;
           margin: 3rem 0 4rem;
@@ -554,7 +535,7 @@ function Home() {
           border: 1px solid var(--neutral-200);
           color: var(--neutral-600);
           padding: 0.75rem 2rem;
-          border-radius: 100px;
+          border-radius: 0px;
           font-size: 0.875rem;
           font-weight: 500;
           cursor: pointer;
@@ -701,9 +682,10 @@ function Home() {
             tech<span>foliyo</span>
           </div>
           <div className="nav-right">
-            <button className="icon-btn">✉︎</button>
-            <button className="icon-btn">🔔︎</button>
-            <button className="btn-primary">+ Create Project</button>
+            {/* Simple black icons - no color */}
+            <button className="icon-btn">✉</button>
+            <button className="icon-btn">🔔</button>
+            <button className="btn-create">+ Create Project</button>
             <div className="avatar">👤</div>
           </div>
         </div>
@@ -726,18 +708,18 @@ function Home() {
           <p className="welcome-subtitle">Discover projects from the community</p>
         </div>
 
-        {/* Filter Pills */}
+        {/* Filter Pills - All Blue */}
         <div className="filter-section">
           <div className="filter-pills">
-            <div className={`pill ${filter === "Feed" ? "active" : ""}`} onClick={() => setFilter("Feed")}>Feed</div>
-            <div className={`pill ${filter === "Trending" ? "active" : ""}`} onClick={() => setFilter("Trending")}>Trending</div>
-            <div className={`pill ${filter === "Machine Learning" ? "active" : ""}`} onClick={() => setFilter("Machine Learning")}>Machine Learning</div>
-            <div className={`pill ${filter === "Web Development" ? "active" : ""}`} onClick={() => setFilter("Web Development")}>Web Development</div>
-            <div className={`pill ${filter === "Open Source" ? "active" : ""}`} onClick={() => setFilter("Open Source")}>Open Source</div>
+            <div className="pill" onClick={() => setFilter("Feed")}>Feed</div>
+            <div className="pill" onClick={() => setFilter("Trending")}>Trending</div>
+            <div className="pill" onClick={() => setFilter("Machine Learning")}>Machine Learning</div>
+            <div className="pill" onClick={() => setFilter("Web Development")}>Web Development</div>
+            <div className="pill" onClick={() => setFilter("Open Source")}>Open Source</div>
           </div>
         </div>
 
-        {/* Projects Grid */}
+        {/* Projects Grid - No hover effects */}
         <div className="projects-grid">
           {getProjects().slice(0, 8).map((project, i) => (
             <div className="project-card" key={i}>
@@ -759,8 +741,8 @@ function Home() {
                     <span>{project.author}</span>
                   </div>
                   <div className="project-stats">
-                    <span className="stat">❤️ {project.likes}</span>
-                    <span className="stat">👁️ {project.views}</span>
+                    <span className="stat">❤ {project.likes}</span>
+                    <span className="stat">👁 {project.views}</span>
                   </div>
                 </div>
               </div>
@@ -768,7 +750,7 @@ function Home() {
           ))}
         </div>
 
-        {/* Show More Button */}
+        {/* Show More Button - Square */}
         <div className="show-more-container">
           <button className="show-more-btn">Show More Projects ↓</button>
         </div>
