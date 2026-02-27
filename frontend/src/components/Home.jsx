@@ -265,7 +265,7 @@ function Home() {
           align-items: center;
         }
 
-        /* Simple black icons using font characters */
+        /* Simple black icons */
         .icon-btn {
           background: transparent;
           border: none;
@@ -309,7 +309,7 @@ function Home() {
           color: var(--neutral-600);
           font-size: 1rem;
           cursor: pointer;
-          transition: color 0.2s;
+          transition: all 0.2s;
         }
 
         .avatar:hover {
@@ -382,7 +382,7 @@ function Home() {
           font-size: 1rem;
         }
 
-        /* Filter Pills - All Blue */
+        /* Filter Pills - White */
         .filter-section {
           margin-bottom: 2rem;
         }
@@ -396,9 +396,9 @@ function Home() {
         .pill {
           padding: 0.5rem 1.25rem;
           border-radius: 0px;
-          background: var(--blue-20);
-          border: 1px solid var(--blue-20);
-          color: var(--white-50);
+          background: var(--white-50);
+          border: 1px solid var(--neutral-200);
+          color: var(--neutral-600);
           font-size: 0.875rem;
           font-weight: 500;
           cursor: pointer;
@@ -682,11 +682,12 @@ function Home() {
             tech<span>foliyo</span>
           </div>
           <div className="nav-right">
-            {/* Simple black icons - no color */}
+            {/* Simple black icons */}
             <button className="icon-btn">✉</button>
             <button className="icon-btn">🔔</button>
             <button className="btn-create">+ Create Project</button>
-            <div className="avatar">👤</div>
+            {/* Profile icon that navigates to profile page */}
+            <div className="avatar" onClick={() => navigate("/profile")}>👤</div>
           </div>
         </div>
       </nav>
@@ -708,7 +709,7 @@ function Home() {
           <p className="welcome-subtitle">Discover projects from the community</p>
         </div>
 
-        {/* Filter Pills - All Blue */}
+        {/* Filter Pills - White */}
         <div className="filter-section">
           <div className="filter-pills">
             <div className="pill" onClick={() => setFilter("Feed")}>Feed</div>
@@ -719,7 +720,7 @@ function Home() {
           </div>
         </div>
 
-        {/* Projects Grid - No hover effects */}
+        {/* Projects Grid */}
         <div className="projects-grid">
           {getProjects().slice(0, 8).map((project, i) => (
             <div className="project-card" key={i}>
@@ -750,7 +751,7 @@ function Home() {
           ))}
         </div>
 
-        {/* Show More Button - Square */}
+        {/* Show More Button */}
         <div className="show-more-container">
           <button className="show-more-btn">Show More Projects ↓</button>
         </div>
