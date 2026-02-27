@@ -791,9 +791,9 @@ function LandingPage() {
               <button className="btn-primary-large" onClick={() => navigate("/signup")}>
                 Create Your Portfolio
               </button>
-              <button className="btn-secondary-large" onClick={() => navigate("/explore")}>
-                Explore Projects
-              </button>
+              <button className="btn-secondary-large" onClick={() => navigate("/home")}>
+  Explore Projects
+</button>
             </div>
             <div className="trust-line">
               Join 10,000+ engineers showcasing their work through live project demonstrations

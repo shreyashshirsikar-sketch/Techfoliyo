@@ -4,7 +4,12 @@ require("dotenv").config();
 
 const app = express();
 
-app.use(cors());
+// More permissive CORS for development
+app.use(cors({
+  origin: "http://localhost:5173", // Your frontend port (Vite default)
+  credentials: true
+}));
+
 app.use(express.json());
 
 // routes
