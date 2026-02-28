@@ -75,6 +75,13 @@ function LandingPage() {
           --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
           --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
           --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+          
+          /* Border Radius */
+          --radius-sm: 6px;
+          --radius-md: 8px;
+          --radius-lg: 12px;
+          --radius-xl: 16px;
+          --radius-full: 9999px;
         }
 
         body {
@@ -154,6 +161,7 @@ function LandingPage() {
           font-weight: 500;
           cursor: pointer;
           transition: color 0.2s;
+          padding: 0.5rem 0;
         }
 
         .nav-links a:hover {
@@ -174,11 +182,13 @@ function LandingPage() {
           font-weight: 500;
           cursor: pointer;
           padding: 0.5rem 1rem;
-          transition: color 0.2s;
+          transition: all 0.2s;
+          border-radius: var(--radius-md);
         }
 
         .btn-ghost:hover {
           color: var(--blue-20);
+          background: var(--neutral-100);
         }
 
         .btn-primary {
@@ -190,10 +200,13 @@ function LandingPage() {
           font-weight: 500;
           cursor: pointer;
           transition: all 0.2s;
+          border-radius: var(--radius-md);
         }
 
         .btn-primary:hover {
           background: var(--black-light);
+          transform: translateY(-1px);
+          box-shadow: var(--shadow-md);
         }
 
         /* Hero Section */
@@ -202,7 +215,7 @@ function LandingPage() {
           display: flex;
           align-items: center;
           padding: 0 2rem;
-          background: linear-gradient(to bottom, var(--neutral-50), var(--white-50));
+          background: linear-gradient(135deg, var(--neutral-50) 0%, var(--white-50) 100%);
         }
 
         @media (min-width: 768px) {
@@ -241,6 +254,20 @@ function LandingPage() {
 
         .hero-left h1 span {
           color: var(--blue-20);
+          position: relative;
+          display: inline-block;
+        }
+
+        .hero-left h1 span::after {
+          content: '';
+          position: absolute;
+          bottom: 4px;
+          left: 0;
+          width: 100%;
+          height: 8px;
+          background: var(--blue-mist);
+          z-index: -1;
+          border-radius: var(--radius-full);
         }
 
         .hero-left p {
@@ -258,6 +285,7 @@ function LandingPage() {
           font-weight: 500;
           padding: 0.25rem 0.75rem;
           margin-bottom: 1.5rem;
+          border-radius: var(--radius-full);
         }
 
         .hero-buttons {
@@ -276,6 +304,7 @@ function LandingPage() {
           font-weight: 500;
           cursor: pointer;
           transition: all 0.2s;
+          border-radius: var(--radius-md);
         }
 
         .btn-primary-large:hover {
@@ -293,6 +322,7 @@ function LandingPage() {
           font-weight: 500;
           cursor: pointer;
           transition: all 0.2s;
+          border-radius: var(--radius-md);
         }
 
         .btn-secondary-large:hover {
@@ -306,6 +336,14 @@ function LandingPage() {
           color: var(--neutral-500);
           border-top: 1px solid var(--neutral-200);
           padding-top: 1.5rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .trust-line::before {
+          content: '✨';
+          font-size: 1rem;
         }
 
         .hero-card {
@@ -313,24 +351,37 @@ function LandingPage() {
           padding: 2rem;
           box-shadow: var(--shadow-xl);
           border: 1px solid var(--neutral-200);
+          border-radius: var(--radius-lg);
+          transition: transform 0.3s ease;
+        }
+
+        .hero-card:hover {
+          transform: translateY(-4px);
         }
 
         .project-structure {
           background: var(--neutral-50);
+          border-radius: var(--radius-md);
         }
 
         .structure-item {
           display: flex;
           gap: 1rem;
           margin-bottom: 1rem;
-          padding-bottom: 1rem;
+          padding: 1rem;
           border-bottom: 1px solid var(--neutral-200);
+          transition: background 0.2s;
         }
 
         .structure-item:last-child {
           margin-bottom: 0;
-          padding-bottom: 0;
+          padding-bottom: 1rem;
           border-bottom: none;
+        }
+
+        .structure-item:hover {
+          background: var(--white-50);
+          border-radius: var(--radius-md);
         }
 
         .item-label {
@@ -373,6 +424,24 @@ function LandingPage() {
           letter-spacing: -0.02em;
           margin-bottom: 1rem;
           color: var(--black-40);
+          position: relative;
+          display: inline-block;
+        }
+
+        .section-header h2::after {
+          content: '';
+          position: absolute;
+          bottom: -8px;
+          left: 0;
+          width: 60px;
+          height: 4px;
+          background: var(--blue-20);
+          border-radius: var(--radius-full);
+        }
+
+        .section-header.center h2::after {
+          left: 50%;
+          transform: translateX(-50%);
         }
 
         .section-header p {
@@ -402,24 +471,27 @@ function LandingPage() {
           background: var(--white-50);
           border: 1px solid var(--neutral-200);
           padding: 2rem;
-          transition: all 0.2s;
+          transition: all 0.3s ease;
+          border-radius: var(--radius-lg);
         }
 
         .problem-card:hover {
           border-color: var(--blue-20);
           box-shadow: var(--shadow-lg);
+          transform: translateY(-4px);
         }
 
         .problem-card .problem-number {
-          font-size: 1.5rem;
-          font-weight: 600;
-          margin-bottom: 1.5rem;
+          font-size: 2.5rem;
+          font-weight: 700;
+          margin-bottom: 1rem;
           color: var(--blue-20);
-          opacity: 0.5;
+          opacity: 0.3;
+          line-height: 1;
         }
 
         .problem-card h3 {
-          font-size: 1.125rem;
+          font-size: 1.25rem;
           font-weight: 600;
           margin-bottom: 0.75rem;
           color: var(--black-40);
@@ -453,24 +525,27 @@ function LandingPage() {
           padding: 2rem;
           background: var(--white-50);
           border: 1px solid var(--neutral-200);
-          transition: all 0.2s;
+          transition: all 0.3s ease;
+          border-radius: var(--radius-lg);
         }
 
         .feature-card:hover {
           border-color: var(--blue-20);
           box-shadow: var(--shadow-lg);
+          transform: translateY(-4px);
         }
 
         .feature-number {
-          font-size: 1.5rem;
-          font-weight: 600;
+          font-size: 2rem;
+          font-weight: 700;
           margin-bottom: 1.5rem;
           color: var(--blue-20);
-          opacity: 0.5;
+          opacity: 0.3;
+          line-height: 1;
         }
 
         .feature-card h3 {
-          font-size: 1.125rem;
+          font-size: 1.25rem;
           font-weight: 600;
           margin-bottom: 1rem;
           color: var(--black-40);
@@ -502,27 +577,30 @@ function LandingPage() {
 
         .audience-card {
           text-align: center;
-          padding: 2rem;
+          padding: 2.5rem 2rem;
           background: var(--white-50);
           border: 1px solid var(--neutral-200);
-          transition: all 0.2s;
+          transition: all 0.3s ease;
+          border-radius: var(--radius-lg);
         }
 
         .audience-card:hover {
           border-color: var(--blue-20);
           box-shadow: var(--shadow-lg);
+          transform: translateY(-4px);
         }
 
         .audience-number {
-          font-size: 1.5rem;
-          font-weight: 600;
-          margin: 0 auto 1rem;
+          font-size: 2rem;
+          font-weight: 700;
+          margin: 0 auto 1.5rem;
           color: var(--blue-20);
-          opacity: 0.5;
+          opacity: 0.3;
+          line-height: 1;
         }
 
         .audience-card h3 {
-          font-size: 1.125rem;
+          font-size: 1.25rem;
           font-weight: 600;
           margin-bottom: 0.75rem;
           color: var(--black-40);
@@ -536,16 +614,47 @@ function LandingPage() {
 
         /* Project Types Section */
         .project-types-section {
-          background: var(--blue-20);
+          background: linear-gradient(135deg, var(--blue-20) 0%, var(--blue-dark) 100%);
           color: var(--white-50);
           text-align: center;
-          padding: 4rem 2rem;
+          padding: 5rem 2rem;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .project-types-section::before {
+          content: '';
+          position: absolute;
+          top: -50%;
+          right: -50%;
+          width: 200%;
+          height: 200%;
+          background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 50%);
+        }
+
+        .project-types-section .section-container {
+          position: relative;
+          z-index: 1;
         }
 
         .project-types-section h2 {
           font-size: clamp(2rem, 4vw, 2.5rem);
           font-weight: 700;
           margin-bottom: 2rem;
+          position: relative;
+          display: inline-block;
+        }
+
+        .project-types-section h2::after {
+          content: '';
+          position: absolute;
+          bottom: -8px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 60px;
+          height: 4px;
+          background: rgba(255, 255, 255, 0.5);
+          border-radius: var(--radius-full);
         }
 
         .tags-container {
@@ -556,18 +665,15 @@ function LandingPage() {
         }
 
         .tag {
-          padding: 0.5rem 1.5rem;
+          padding: 0.75rem 2rem;
           background: rgba(255, 255, 255, 0.1);
           border: 1px solid rgba(255, 255, 255, 0.2);
-          border-radius: 0;
-          font-size: 0.9375rem;
+          border-radius: var(--radius-full);
+          font-size: 1rem;
+          font-weight: 500;
           color: var(--white-50);
-          transition: all 0.2s;
-        }
-
-        .tag:hover {
-          background: rgba(255, 255, 255, 0.2);
-          transform: translateY(-2px);
+          backdrop-filter: blur(10px);
+          cursor: default;
         }
 
         /* CTA Section */
@@ -604,7 +710,8 @@ function LandingPage() {
           font-size: 1.125rem;
           font-weight: 500;
           cursor: pointer;
-          transition: all 0.2s;
+          transition: all 0.3s ease;
+          border-radius: var(--radius-md);
         }
 
         .cta-button-large:hover {
@@ -618,6 +725,7 @@ function LandingPage() {
           background: var(--black-40);
           color: var(--white-50);
           padding: 4rem 2rem 2rem;
+          position: relative;
         }
 
         @media (min-width: 768px) {
@@ -670,11 +778,16 @@ function LandingPage() {
           color: var(--neutral-400);
           font-size: 0.875rem;
           cursor: pointer;
-          transition: color 0.2s;
+          transition: all 0.2s;
+          padding: 0.5rem 1rem;
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: var(--radius-full);
         }
 
         .social-link:hover {
-          color: var(--blue-20);
+          color: var(--white-50);
+          background: var(--blue-20);
+          transform: translateY(-2px);
         }
 
         .footer-col h4 {
@@ -693,11 +806,13 @@ function LandingPage() {
           font-size: 0.875rem;
           margin-bottom: 0.75rem;
           cursor: pointer;
-          transition: color 0.2s;
+          transition: all 0.2s;
+          padding: 0.25rem 0;
         }
 
         .footer-link:hover {
           color: var(--blue-20);
+          transform: translateX(4px);
         }
 
         .footer-bottom {
@@ -728,6 +843,7 @@ function LandingPage() {
         .footer-bottom-links span {
           cursor: pointer;
           transition: color 0.2s;
+          padding: 0.25rem 0;
         }
 
         .footer-bottom-links span:hover {
@@ -751,6 +867,45 @@ function LandingPage() {
           .btn-primary-large, .btn-secondary-large {
             width: 100%;
           }
+
+          .section-header h2::after {
+            left: 0;
+            transform: none;
+          }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+          width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+          background: var(--neutral-100);
+        }
+
+        ::-webkit-scrollbar-thumb {
+          background: var(--neutral-400);
+          border-radius: var(--radius-full);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+          background: var(--blue-20);
+        }
+
+        /* Loading Animation */
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .hero, .problem-section, .features-section, .audience-section, .project-types-section, .cta-section {
+          animation: fadeInUp 0.6s ease-out;
         }
       `}</style>
 
@@ -777,7 +932,7 @@ function LandingPage() {
       <section id="home" className="hero">
         <div className="hero-content">
           <div className="hero-left">
-            <span className="hero-badge">For engineers, by engineers</span>
+            <span className="hero-badge">⚡ For engineers, by engineers</span>
             <h1>
               Showcase your live projects<br />
               <span>Working demos. Real proof.</span>
@@ -792,8 +947,8 @@ function LandingPage() {
                 Create Your Portfolio
               </button>
               <button className="btn-secondary-large" onClick={() => navigate("/home")}>
-  Explore Projects
-</button>
+                Explore Projects
+              </button>
             </div>
             <div className="trust-line">
               Join 10,000+ engineers showcasing their work through live project demonstrations
@@ -855,7 +1010,7 @@ function LandingPage() {
       {/* Features Section */}
       <section id="features" className="features-section">
         <div className="section-container">
-          <div className="section-header" style={{ textAlign: 'center', margin: '0 auto 3rem' }}>
+          <div className="section-header center" style={{ textAlign: 'center', margin: '0 auto 3rem' }}>
             <h2>Built for engineers who mean business</h2>
             <p>Every feature designed to showcase real engineering work.</p>
           </div>
@@ -898,7 +1053,7 @@ function LandingPage() {
       {/* Audience Section */}
       <section id="audience" className="audience-section">
         <div className="section-container">
-          <div className="section-header" style={{ textAlign: 'center', margin: '0 auto 3rem' }}>
+          <div className="section-header center" style={{ textAlign: 'center', margin: '0 auto 3rem' }}>
             <h2>Who is this platform for?</h2>
           </div>
 
@@ -959,9 +1114,9 @@ function LandingPage() {
               Building bridges between engineers and recruiters through live project demonstrations.
             </p>
             <div className="footer-social">
-              <span className="social-link">Twitter</span>
-              <span className="social-link">GitHub</span>
-              <span className="social-link">LinkedIn</span>
+              <span className="social-link">𝕏 Twitter</span>
+              <span className="social-link">⌨️ GitHub</span>
+              <span className="social-link">💼 LinkedIn</span>
             </div>
           </div>
           <div className="footer-col">
@@ -992,9 +1147,12 @@ function LandingPage() {
         <div className="footer-bottom">
           <span>© 2026 Techfoliyo. All rights reserved.</span>
           <div className="footer-bottom-links">
-            <span>Privacy</span>
-            <span>Terms</span>
+            <span>Privacy Policy</span>
+            <span>Terms of Service</span>
           </div>
+        </div>
+        <div className="footer-tagline">
+          Made with ❤️ for the engineering community
         </div>
       </footer>
     </>

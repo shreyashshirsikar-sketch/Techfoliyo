@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function Profile() {
   const navigate = useNavigate();
+  const { logout } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState("about");
@@ -274,9 +276,7 @@ function Profile() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/");
+    logout();
   };
 
   return (
@@ -340,6 +340,7 @@ function Profile() {
           right: 0;
           z-index: 50;
           padding: 1rem 2rem;
+          transition: all 0.3s ease;
           background: var(--white-50);
           border-bottom: 1px solid var(--neutral-200);
         }
@@ -347,6 +348,19 @@ function Profile() {
         @media (min-width: 768px) {
           .nav {
             padding: 1.25rem 4rem;
+          }
+        }
+
+        .nav-scrolled {
+          background: rgba(255, 255, 255, 0.8);
+          backdrop-filter: blur(12px);
+          border-bottom: 1px solid var(--neutral-200);
+          padding: 0.75rem 2rem;
+        }
+
+        @media (min-width: 768px) {
+          .nav-scrolled {
+            padding: 1rem 4rem;
           }
         }
 
@@ -405,6 +419,13 @@ function Profile() {
           font-weight: 600;
           font-size: 0.9rem;
           cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+          background: var(--black-light);
+          transform: translateY(-1px);
+          box-shadow: var(--shadow-md);
         }
 
         /* Main Content */
@@ -427,6 +448,7 @@ function Profile() {
           padding: 2rem;
           border-radius: 16px;
           border: 1px solid var(--neutral-200);
+          box-shadow: var(--shadow-sm);
         }
 
         .profile-info {
@@ -475,6 +497,13 @@ function Profile() {
           font-weight: 600;
           font-size: 0.95rem;
           cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .btn-edit:hover {
+          background: var(--neutral-50);
+          border-color: var(--blue-20);
+          color: var(--blue-20);
         }
 
         .btn-save {
@@ -486,7 +515,13 @@ function Profile() {
           font-weight: 600;
           font-size: 0.95rem;
           cursor: pointer;
-          margin-right: 0.5rem;
+          transition: all 0.2s;
+        }
+
+        .btn-save:hover {
+          background: var(--blue-dark);
+          transform: translateY(-2px);
+          box-shadow: var(--shadow-md);
         }
 
         .btn-cancel {
@@ -498,6 +533,12 @@ function Profile() {
           font-weight: 600;
           font-size: 0.95rem;
           cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .btn-cancel:hover {
+          background: var(--neutral-100);
+          border-color: var(--neutral-400);
         }
 
         /* Stats Grid */
@@ -516,6 +557,12 @@ function Profile() {
           display: flex;
           align-items: center;
           gap: 1rem;
+          transition: all 0.2s;
+        }
+
+        .stat-card:hover {
+          border-color: var(--blue-20);
+          box-shadow: var(--shadow-md);
         }
 
         .stat-icon {
@@ -557,6 +604,7 @@ function Profile() {
           margin-bottom: 2rem;
           border-bottom: 1px solid var(--neutral-200);
           padding-bottom: 0.5rem;
+          flex-wrap: wrap;
         }
 
         .tab {
@@ -565,10 +613,21 @@ function Profile() {
           font-weight: 600;
           color: var(--neutral-600);
           cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .tab:hover {
+          color: var(--blue-20);
+          background: var(--neutral-100);
         }
 
         .tab.active {
           background: var(--blue-20);
+          color: var(--white-50);
+        }
+
+        .tab.active:hover {
+          background: var(--blue-dark);
           color: var(--white-50);
         }
 
@@ -579,6 +638,7 @@ function Profile() {
           border-radius: 16px;
           padding: 2rem;
           margin-bottom: 1.5rem;
+          box-shadow: var(--shadow-sm);
         }
 
         .card-title {
@@ -613,12 +673,14 @@ function Profile() {
           border-radius: 8px;
           font-size: 0.95rem;
           background: var(--white-50);
+          transition: all 0.2s;
         }
 
         .form-group input:focus,
         .form-group textarea:focus {
           outline: none;
           border-color: var(--blue-20);
+          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
         .form-row {
@@ -661,6 +723,12 @@ function Profile() {
           color: var(--neutral-500);
           cursor: pointer;
           font-size: 0.8rem;
+          transition: all 0.2s;
+        }
+
+        .remove-btn:hover {
+          background: var(--neutral-200);
+          color: var(--neutral-700);
         }
 
         .add-btn {
@@ -672,6 +740,12 @@ function Profile() {
           font-weight: 600;
           cursor: pointer;
           margin-top: 1rem;
+          transition: all 0.2s;
+        }
+
+        .add-btn:hover {
+          background: var(--blue-20);
+          color: var(--white-50);
         }
 
         .tech-tags-container {
@@ -696,6 +770,11 @@ function Profile() {
           color: var(--neutral-500);
           cursor: pointer;
           font-size: 1rem;
+          transition: color 0.2s;
+        }
+
+        .tech-tag-remove:hover {
+          color: var(--red-500);
         }
 
         .add-tech-btn {
@@ -706,6 +785,12 @@ function Profile() {
           color: var(--neutral-500);
           cursor: pointer;
           font-size: 0.85rem;
+          transition: all 0.2s;
+        }
+
+        .add-tech-btn:hover {
+          border-color: var(--blue-20);
+          color: var(--blue-20);
         }
 
         /* About */
@@ -746,6 +831,7 @@ function Profile() {
           height: 100%;
           background: var(--blue-20);
           border-radius: 4px;
+          transition: width 0.3s ease;
         }
 
         .skill-percent {
@@ -859,6 +945,13 @@ function Profile() {
           border: 1px solid var(--neutral-200);
           border-radius: 12px;
           padding: 1.5rem;
+          transition: all 0.2s;
+        }
+
+        .portfolio-item:hover {
+          border-color: var(--blue-20);
+          box-shadow: var(--shadow-md);
+          transform: translateY(-2px);
         }
 
         .portfolio-title {
@@ -911,6 +1004,12 @@ function Profile() {
           text-decoration: none;
           font-size: 0.8rem;
           font-weight: 600;
+          transition: color 0.2s;
+        }
+
+        .portfolio-link:hover {
+          color: var(--blue-dark);
+          text-decoration: underline;
         }
 
         /* Social Links */
@@ -928,6 +1027,12 @@ function Profile() {
           background: var(--neutral-50);
           border-radius: 8px;
           border: 1px solid var(--neutral-200);
+          transition: all 0.2s;
+        }
+
+        .social-item:hover {
+          border-color: var(--blue-20);
+          box-shadow: var(--shadow-sm);
         }
 
         .social-platform {
@@ -946,6 +1051,7 @@ function Profile() {
           background: var(--black-40);
           color: var(--white-50);
           padding: 4rem 2rem 2rem;
+          margin-top: 4rem;
         }
 
         @media (min-width: 768px) {
@@ -999,6 +1105,11 @@ function Profile() {
           color: var(--neutral-400);
           font-size: 0.875rem;
           cursor: pointer;
+          transition: color 0.2s;
+        }
+
+        .social-link:hover {
+          color: var(--blue-20);
         }
 
         .footer-col h4 {
@@ -1017,6 +1128,11 @@ function Profile() {
           font-size: 0.875rem;
           margin-bottom: 0.75rem;
           cursor: pointer;
+          transition: color 0.2s;
+        }
+
+        .footer-link:hover {
+          color: var(--blue-20);
         }
 
         .footer-bottom {
@@ -1046,27 +1162,56 @@ function Profile() {
 
         .footer-bottom-links span {
           cursor: pointer;
+          transition: color 0.2s;
         }
 
+        .footer-bottom-links span:hover {
+          color: var(--blue-20);
+        }
+
+        /* Responsive */
         @media (max-width: 900px) {
           .portfolio-grid,
-          .form-row {
+          .form-row,
+          .social-grid {
             grid-template-columns: 1fr;
           }
           
           .profile-header {
             flex-direction: column;
-            gap: 1rem;
+            gap: 1.5rem;
           }
           
           .profile-actions {
             width: 100%;
-            justify-content: space-between;
+            justify-content: flex-start;
           }
           
           .tabs {
             flex-wrap: wrap;
           }
+          
+          .stats-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+          width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+          background: var(--neutral-100);
+        }
+
+        ::-webkit-scrollbar-thumb {
+          background: var(--neutral-400);
+          border-radius: var(--radius-full);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+          background: var(--blue-20);
         }
       `}</style>
 
@@ -1079,7 +1224,7 @@ function Profile() {
           <div className="nav-right">
             <span className="nav-icon">✉</span>
             <span className="nav-icon">🔔</span>
-            <div className="avatar-small" onClick={() => navigate("/profile")}>YP</div>
+            <div className="avatar-small" onClick={() => navigate("/profile")}>AR</div>
             <button className="btn-logout" onClick={handleLogout}>Logout</button>
           </div>
         </div>
@@ -1095,8 +1240,8 @@ function Profile() {
                 <h1 className="profile-name">{userData.name}</h1>
                 <div className="profile-headline">{userData.headline}</div>
                 <div className="profile-meta">
-                  <span className="profile-meta-item">{userData.location}</span>
-                  <span className="profile-meta-item">{userData.email}</span>
+                  <span className="profile-meta-item">📍 {userData.location}</span>
+                  <span className="profile-meta-item">✉ {userData.email}</span>
                 </div>
               </>
             ) : (
@@ -1137,14 +1282,14 @@ function Profile() {
         {/* Stats Grid */}
         <div className="stats-grid">
           <div className="stat-card">
-            <div className="stat-icon">12k</div>
+            <div className="stat-icon">👥</div>
             <div className="stat-content">
               <span className="stat-value">{userData.connections}</span>
               <span className="stat-label">CONNECTIONS</span>
             </div>
           </div>
           <div className="stat-card">
-            <div className="stat-icon">38k</div>
+            <div className="stat-icon">⭐</div>
             <div className="stat-content">
               <span className="stat-value">{userData.followers}</span>
               <span className="stat-label">FOLLOWERS</span>
@@ -1382,10 +1527,10 @@ function Profile() {
                     </div>
                     <div className="portfolio-footer">
                       <div className="portfolio-stats">
-                        <span>{project.stats} views</span>
-                        <span>{project.views} likes</span>
+                        <span>👁 {project.stats}</span>
+                        <span>❤️ {project.views}</span>
                       </div>
-                      <a href="#" className="portfolio-link">View</a>
+                      <a href="#" className="portfolio-link">View Project →</a>
                     </div>
                   </div>
                 ))}
@@ -1432,7 +1577,7 @@ function Profile() {
                     </div>
                     <div className="form-row">
                       <div className="form-group">
-                        <label>Stats</label>
+                        <label>Stats (Views)</label>
                         <input 
                           type="text" 
                           value={project.stats} 
@@ -1440,7 +1585,7 @@ function Profile() {
                         />
                       </div>
                       <div className="form-group">
-                        <label>Views</label>
+                        <label>Likes</label>
                         <input 
                           type="text" 
                           value={project.views} 
@@ -1507,9 +1652,9 @@ function Profile() {
               Building bridges between engineers and recruiters through live project demonstrations.
             </p>
             <div className="footer-social">
-              <span className="social-link">Twitter</span>
-              <span className="social-link">GitHub</span>
-              <span className="social-link">LinkedIn</span>
+              <span className="social-link">𝕏 Twitter</span>
+              <span className="social-link">⌨️ GitHub</span>
+              <span className="social-link">💼 LinkedIn</span>
             </div>
           </div>
           <div className="footer-col">
