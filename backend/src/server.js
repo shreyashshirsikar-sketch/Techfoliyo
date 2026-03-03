@@ -14,10 +14,12 @@ app.use(express.json());
 
 // routes
 const authRoutes = require("./routes/authRoutes");
-app.use("/auth", authRoutes);
-
 const projectRoutes = require("./routes/projectRoutes");
+const userRoutes = require("./routes/userRoutes"); // Make sure this file exists
+
+app.use("/auth", authRoutes);
 app.use("/projects", projectRoutes);
+app.use("/users", userRoutes); // Add this line for user routes
 
 // test route
 app.get("/", (req, res) => {

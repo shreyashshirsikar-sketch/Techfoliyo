@@ -216,6 +216,20 @@ function LandingPage() {
           align-items: center;
           padding: 0 2rem;
           background: linear-gradient(135deg, var(--neutral-50) 0%, var(--white-50) 100%);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .hero::before {
+          content: '';
+          position: absolute;
+          top: -50%;
+          right: -50%;
+          width: 200%;
+          height: 200%;
+          background: radial-gradient(circle, var(--blue-mist) 0%, transparent 50%);
+          opacity: 0.5;
+          z-index: 0;
         }
 
         @media (min-width: 768px) {
@@ -233,6 +247,8 @@ function LandingPage() {
           gap: 3rem;
           align-items: center;
           padding: 6rem 0;
+          position: relative;
+          z-index: 1;
         }
 
         @media (min-width: 1024px) {
@@ -244,7 +260,7 @@ function LandingPage() {
 
         .hero-left h1 {
           font-family: var(--font-display);
-          font-size: clamp(2.5rem, 5vw, 3.5rem);
+          font-size: clamp(2.5rem, 5vw, 4rem);
           font-weight: 800;
           line-height: 1.1;
           letter-spacing: -0.02em;
@@ -252,13 +268,18 @@ function LandingPage() {
           margin-bottom: 1.5rem;
         }
 
-        .hero-left h1 span {
+        .hero-left h1 .line1 {
+          display: block;
+        }
+
+        .hero-left h1 .line2 {
+          display: block;
           color: var(--blue-20);
           position: relative;
           display: inline-block;
         }
 
-        .hero-left h1 span::after {
+        .hero-left h1 .line2::after {
           content: '';
           position: absolute;
           bottom: 4px;
@@ -314,9 +335,9 @@ function LandingPage() {
         }
 
         .btn-secondary-large {
-          background: var(--blue-20);
-          color: var(--white-50);
-          border: none;
+          background: transparent;
+          color: var(--black-40);
+          border: 1.5px solid var(--black-40);
           padding: 0.875rem 2rem;
           font-size: 1rem;
           font-weight: 500;
@@ -326,7 +347,8 @@ function LandingPage() {
         }
 
         .btn-secondary-large:hover {
-          background: var(--blue-dark);
+          background: var(--black-40);
+          color: var(--white-50);
           transform: translateY(-2px);
           box-shadow: var(--shadow-lg);
         }
@@ -342,7 +364,7 @@ function LandingPage() {
         }
 
         .trust-line::before {
-          content: '✨';
+          content: '🔗';
           font-size: 1rem;
         }
 
@@ -357,43 +379,105 @@ function LandingPage() {
 
         .hero-card:hover {
           transform: translateY(-4px);
+          box-shadow: var(--shadow-2xl);
         }
 
-        .project-structure {
+        .profile-header {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          margin-bottom: 1.5rem;
+          padding-bottom: 1.5rem;
+          border-bottom: 1px solid var(--neutral-200);
+        }
+
+        .profile-avatar {
+          width: 48px;
+          height: 48px;
+          background: var(--blue-20);
+          border-radius: var(--radius-full);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--white-50);
+          font-weight: 600;
+          font-size: 1.25rem;
+        }
+
+        .profile-info h4 {
+          font-weight: 600;
+          margin-bottom: 0.25rem;
+        }
+
+        .profile-info p {
+          font-size: 0.875rem;
+          color: var(--neutral-500);
+        }
+
+        .profile-link {
+          display: inline-block;
+          background: var(--neutral-100);
+          padding: 0.5rem 1rem;
+          border-radius: var(--radius-full);
+          font-size: 0.875rem;
+          color: var(--neutral-600);
+          margin-bottom: 1.5rem;
+          font-family: monospace;
+        }
+
+        .profile-link span {
+          color: var(--blue-20);
+          font-weight: 500;
+        }
+
+        .project-preview {
           background: var(--neutral-50);
           border-radius: var(--radius-md);
+          padding: 1rem;
         }
 
-        .structure-item {
+        .preview-item {
           display: flex;
           gap: 1rem;
           margin-bottom: 1rem;
-          padding: 1rem;
+          padding: 0.75rem;
           border-bottom: 1px solid var(--neutral-200);
           transition: background 0.2s;
         }
 
-        .structure-item:last-child {
+        .preview-item:last-child {
           margin-bottom: 0;
-          padding-bottom: 1rem;
+          padding-bottom: 0.75rem;
           border-bottom: none;
         }
 
-        .structure-item:hover {
+        .preview-item:hover {
           background: var(--white-50);
           border-radius: var(--radius-md);
         }
 
-        .item-label {
+        .preview-label {
           font-weight: 600;
           min-width: 100px;
           color: var(--blue-20);
           font-size: 0.875rem;
         }
 
-        .item-value {
+        .preview-value {
           color: var(--neutral-600);
           font-size: 0.875rem;
+        }
+
+        .verify-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.25rem;
+          background: var(--green-50);
+          color: var(--green-600);
+          font-size: 0.75rem;
+          padding: 0.25rem 0.5rem;
+          border-radius: var(--radius-full);
+          margin-left: 0.5rem;
         }
 
         /* Section Styles */
@@ -439,6 +523,11 @@ function LandingPage() {
           border-radius: var(--radius-full);
         }
 
+        .section-header.center {
+          text-align: center;
+          margin: 0 auto 3rem;
+        }
+
         .section-header.center h2::after {
           left: 50%;
           transform: translateX(-50%);
@@ -457,8 +546,8 @@ function LandingPage() {
         .problem-grid {
           display: grid;
           grid-template-columns: 1fr;
-          gap: 1.5rem;
-          margin-bottom: 3rem;
+          gap: 2rem;
+          margin-top: 3rem;
         }
 
         @media (min-width: 768px) {
@@ -481,19 +570,15 @@ function LandingPage() {
           transform: translateY(-4px);
         }
 
-        .problem-card .problem-number {
-          font-size: 2.5rem;
-          font-weight: 700;
-          margin-bottom: 1rem;
-          color: var(--blue-20);
-          opacity: 0.3;
-          line-height: 1;
+        .problem-icon {
+          font-size: 2rem;
+          margin-bottom: 1.5rem;
         }
 
         .problem-card h3 {
           font-size: 1.25rem;
           font-weight: 600;
-          margin-bottom: 0.75rem;
+          margin-bottom: 1rem;
           color: var(--black-40);
         }
 
@@ -501,6 +586,98 @@ function LandingPage() {
           color: var(--neutral-600);
           font-size: 0.9375rem;
           line-height: 1.6;
+        }
+
+        .quote-block {
+          background: var(--neutral-50);
+          padding: 2rem;
+          border-radius: var(--radius-lg);
+          margin-top: 3rem;
+          border-left: 4px solid var(--blue-20);
+        }
+
+        .quote-block p {
+          font-size: 1.125rem;
+          color: var(--neutral-700);
+          font-style: italic;
+          margin-bottom: 1rem;
+        }
+
+        .quote-block .quote-author {
+          color: var(--neutral-500);
+          font-size: 0.9375rem;
+          font-weight: 500;
+        }
+
+        /* Solution Section */
+        .solution-section {
+          background: var(--neutral-50);
+        }
+
+        .solution-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 3rem;
+          align-items: center;
+        }
+
+        @media (min-width: 1024px) {
+          .solution-grid {
+            grid-template-columns: 1fr 1fr;
+          }
+        }
+
+        .solution-left h3 {
+          font-size: 2rem;
+          font-weight: 700;
+          margin-bottom: 1.5rem;
+          color: var(--black-40);
+        }
+
+        .solution-list {
+          list-style: none;
+        }
+
+        .solution-list li {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          margin-bottom: 1rem;
+          color: var(--neutral-600);
+        }
+
+        .solution-list li::before {
+          content: '✓';
+          color: var(--blue-20);
+          font-weight: 700;
+          font-size: 1.25rem;
+        }
+
+        .solution-right {
+          background: var(--white-50);
+          padding: 2rem;
+          border-radius: var(--radius-lg);
+          box-shadow: var(--shadow-xl);
+          border: 1px solid var(--neutral-200);
+        }
+
+        .solution-right h4 {
+          font-size: 1.25rem;
+          margin-bottom: 1rem;
+          color: var(--black-40);
+        }
+
+        .profile-example {
+          font-family: monospace;
+          background: var(--neutral-50);
+          padding: 1rem;
+          border-radius: var(--radius-md);
+          margin-bottom: 1rem;
+        }
+
+        .profile-example .url {
+          color: var(--blue-20);
+          font-weight: 500;
         }
 
         /* Features Section */
@@ -511,7 +688,7 @@ function LandingPage() {
         .features-grid {
           display: grid;
           grid-template-columns: 1fr;
-          gap: 1.5rem;
+          gap: 2rem;
           margin-top: 3rem;
         }
 
@@ -535,13 +712,9 @@ function LandingPage() {
           transform: translateY(-4px);
         }
 
-        .feature-number {
+        .feature-icon {
           font-size: 2rem;
-          font-weight: 700;
           margin-bottom: 1.5rem;
-          color: var(--blue-20);
-          opacity: 0.3;
-          line-height: 1;
         }
 
         .feature-card h3 {
@@ -557,128 +730,55 @@ function LandingPage() {
           line-height: 1.6;
         }
 
-        /* Audience Section */
-        .audience-section {
-          background: var(--white-50);
+        /* Comparison Table */
+        .comparison-section {
+          background: var(--neutral-50);
         }
 
-        .audience-grid {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 2rem;
+        .comparison-table {
+          width: 100%;
+          border-collapse: collapse;
+          background: var(--white-50);
+          border-radius: var(--radius-lg);
+          overflow: hidden;
+          box-shadow: var(--shadow-lg);
           margin-top: 3rem;
         }
 
-        @media (min-width: 768px) {
-          .audience-grid {
-            grid-template-columns: repeat(3, 1fr);
-          }
-        }
-
-        .audience-card {
-          text-align: center;
-          padding: 2.5rem 2rem;
-          background: var(--white-50);
-          border: 1px solid var(--neutral-200);
-          transition: all 0.3s ease;
-          border-radius: var(--radius-lg);
-        }
-
-        .audience-card:hover {
-          border-color: var(--blue-20);
-          box-shadow: var(--shadow-lg);
-          transform: translateY(-4px);
-        }
-
-        .audience-number {
-          font-size: 2rem;
-          font-weight: 700;
-          margin: 0 auto 1.5rem;
-          color: var(--blue-20);
-          opacity: 0.3;
-          line-height: 1;
-        }
-
-        .audience-card h3 {
-          font-size: 1.25rem;
+        .comparison-table th {
+          background: var(--black-40);
+          color: var(--white-50);
           font-weight: 600;
-          margin-bottom: 0.75rem;
-          color: var(--black-40);
+          padding: 1rem;
+          text-align: left;
         }
 
-        .audience-card p {
-          color: var(--neutral-600);
-          font-size: 0.9375rem;
-          line-height: 1.6;
+        .comparison-table td {
+          padding: 1rem;
+          border-bottom: 1px solid var(--neutral-200);
         }
 
-        /* Project Types Section */
-        .project-types-section {
-          background: linear-gradient(135deg, var(--blue-20) 0%, var(--blue-dark) 100%);
-          color: var(--white-50);
-          text-align: center;
-          padding: 5rem 2rem;
-          position: relative;
-          overflow: hidden;
+        .comparison-table tr:last-child td {
+          border-bottom: none;
         }
 
-        .project-types-section::before {
-          content: '';
-          position: absolute;
-          top: -50%;
-          right: -50%;
-          width: 200%;
-          height: 200%;
-          background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 50%);
+        .comparison-table tr:hover {
+          background: var(--neutral-50);
         }
 
-        .project-types-section .section-container {
-          position: relative;
-          z-index: 1;
-        }
-
-        .project-types-section h2 {
-          font-size: clamp(2rem, 4vw, 2.5rem);
+        .check-mark {
+          color: var(--blue-20);
           font-weight: 700;
-          margin-bottom: 2rem;
-          position: relative;
-          display: inline-block;
         }
 
-        .project-types-section h2::after {
-          content: '';
-          position: absolute;
-          bottom: -8px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 60px;
-          height: 4px;
-          background: rgba(255, 255, 255, 0.5);
-          border-radius: var(--radius-full);
-        }
-
-        .tags-container {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 1rem;
-          justify-content: center;
-        }
-
-        .tag {
-          padding: 0.75rem 2rem;
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          border-radius: var(--radius-full);
-          font-size: 1rem;
-          font-weight: 500;
-          color: var(--white-50);
-          backdrop-filter: blur(10px);
-          cursor: default;
+        .platform-name {
+          font-weight: 600;
         }
 
         /* CTA Section */
         .cta-section {
-          background: var(--white-50);
+          background: linear-gradient(135deg, var(--blue-20) 0%, var(--blue-dark) 100%);
+          color: var(--white-50);
           text-align: center;
         }
 
@@ -693,31 +793,37 @@ function LandingPage() {
           font-weight: 700;
           letter-spacing: -0.02em;
           margin-bottom: 1.5rem;
-          color: var(--black-40);
+          color: var(--white-50);
         }
 
         .cta-content p {
-          color: var(--neutral-600);
+          color: rgba(255, 255, 255, 0.9);
           font-size: 1.125rem;
           margin-bottom: 2rem;
         }
 
         .cta-button-large {
-          background: var(--blue-20);
-          color: var(--white-50);
+          background: var(--white-50);
+          color: var(--blue-20);
           border: none;
           padding: 1rem 3rem;
           font-size: 1.125rem;
-          font-weight: 500;
+          font-weight: 600;
           cursor: pointer;
           transition: all 0.3s ease;
           border-radius: var(--radius-md);
         }
 
         .cta-button-large:hover {
-          background: var(--blue-dark);
+          background: var(--white-off);
           transform: translateY(-2px);
           box-shadow: var(--shadow-xl);
+        }
+
+        .cta-small {
+          margin-top: 1rem;
+          font-size: 0.875rem;
+          opacity: 0.8;
         }
 
         /* Footer */
@@ -771,7 +877,7 @@ function LandingPage() {
 
         .footer-social {
           display: flex;
-          gap: 1.5rem;
+          gap: 1rem;
         }
 
         .social-link {
@@ -868,9 +974,8 @@ function LandingPage() {
             width: 100%;
           }
 
-          .section-header h2::after {
-            left: 0;
-            transform: none;
+          .comparison-table {
+            font-size: 0.875rem;
           }
         }
 
@@ -904,7 +1009,7 @@ function LandingPage() {
           }
         }
 
-        .hero, .problem-section, .features-section, .audience-section, .project-types-section, .cta-section {
+        .hero, .problem-section, .solution-section, .features-section, .comparison-section, .cta-section {
           animation: fadeInUp 0.6s ease-out;
         }
       `}</style>
@@ -917,13 +1022,14 @@ function LandingPage() {
             </div>
             <div className="nav-links">
               <a onClick={() => scrollToSection("problem")}>Problem</a>
+              <a onClick={() => scrollToSection("solution")}>Solution</a>
               <a onClick={() => scrollToSection("features")}>Features</a>
-              <a onClick={() => scrollToSection("audience")}>For Whom</a>
+              <a onClick={() => scrollToSection("comparison")}>Compare</a>
             </div>
           </div>
           <div className="nav-right">
             <button className="btn-ghost" onClick={() => navigate("/login")}>Sign in</button>
-            <button className="btn-primary" onClick={() => navigate("/signup")}>Create Portfolio</button>
+            <button className="btn-primary" onClick={() => navigate("/signup")}>Create Your Profile</button>
           </div>
         </div>
       </nav>
@@ -932,46 +1038,50 @@ function LandingPage() {
       <section id="home" className="hero">
         <div className="hero-content">
           <div className="hero-left">
-            <span className="hero-badge">⚡ For engineers, by engineers</span>
+            <span className="hero-badge">⚡ Replace your resume PDF</span>
             <h1>
-              Showcase your live projects<br />
-              <span>Working demos. Real proof.</span>
+              <span className="line1">Your resume is a PDF.</span>
+              <span className="line2">Your skills are not.</span>
             </h1>
             <p>
-              Stop sharing just repositories. Let recruiters see your projects in action.
-              TechFoliyo helps engineers build professional portfolios with live,
-              working applications.
+              Techfoliyo turns your resume into a live profile where projects prove your abilities — not just bullet points. Share one link instead of sending resumes everywhere.
             </p>
             <div className="hero-buttons">
               <button className="btn-primary-large" onClick={() => navigate("/signup")}>
-                Create Your Portfolio
+                Create Your Techfoliyo
               </button>
-              <button className="btn-secondary-large" onClick={() => navigate("/home")}>
-                Explore Projects
+              <button className="btn-secondary-large" onClick={() => navigate("/example")}>
+                View Example Profile
               </button>
             </div>
             <div className="trust-line">
-              Join 10,000+ engineers showcasing their work through live project demonstrations
+              Share one link instead of sending resumes everywhere
             </div>
           </div>
           <div className="hero-right">
             <div className="hero-card">
-              <div className="project-structure">
-                <div className="structure-item">
-                  <span className="item-label">Live Demo</span>
-                  <span className="item-value">ecommerce-demo.techfoliyo.com</span>
+              <div className="profile-header">
+                <div className="profile-avatar">AS</div>
+                <div className="profile-info">
+                  <h4>Alex S. · Full Stack Engineer</h4>
+                  <p>techfoliyo.com/alex</p>
                 </div>
-                <div className="structure-item">
-                  <span className="item-label">GitHub</span>
-                  <span className="item-value">github.com/user/project (48 commits)</span>
+              </div>
+              <div className="profile-link">
+                <span>🔗 techfoliyo.com/alex</span> — one link to rule them all
+              </div>
+              <div className="project-preview">
+                <div className="preview-item">
+                  <span className="preview-label">Resume</span>
+                  <span className="preview-value">Education, experience, skills</span>
                 </div>
-                <div className="structure-item">
-                  <span className="item-label">Tech Stack</span>
-                  <span className="item-value">React, Node.js, MongoDB</span>
+                <div className="preview-item">
+                  <span className="preview-label">Projects</span>
+                  <span className="preview-value">E-commerce platform · Live demo →</span>
                 </div>
-                <div className="structure-item">
-                  <span className="item-label">Status</span>
-                  <span className="item-value" style={{ color: 'var(--blue-20)' }}>✓ Verified Live</span>
+                <div className="preview-item">
+                  <span className="preview-label">Proof</span>
+                  <span className="preview-value">✓ 47 commits · 3 live deployments</span>
                 </div>
               </div>
             </div>
@@ -983,25 +1093,62 @@ function LandingPage() {
       <section id="problem" className="problem-section">
         <div className="section-container">
           <div className="section-header">
-            <h2>Current portfolios show code, not capability.</h2>
-            <p>Recruiters don't have time to download and run every project. They need instant evaluation.</p>
+            <h2>The problem with engineering resumes</h2>
+            <p>Recruiters scan a resume in seconds. But engineering is not measurable in bullet points.</p>
           </div>
 
           <div className="problem-grid">
             <div className="problem-card">
-              <div className="problem-number">01</div>
-              <h3>GitHub shows code without context</h3>
-              <p>Recruiters don't have time to download, setup, and run your projects. They need instant evaluation.</p>
+              <div className="problem-icon">📄</div>
+              <h3>Resumes describe. They don't demonstrate.</h3>
+              <p>Students write "Built a web app" or "Know React" — but companies never know what they actually built.</p>
             </div>
             <div className="problem-card">
-              <div className="problem-number">02</div>
-              <h3>Resumes list skills without proof</h3>
-              <p>Anyone can claim knowledge. Live projects prove you can actually build.</p>
+              <div className="problem-icon">⏱️</div>
+              <h3>Recruiters scan in 7 seconds</h3>
+              <p>Static PDFs don't show capability. They just list claims without any way to verify them.</p>
             </div>
             <div className="problem-card">
-              <div className="problem-number">03</div>
-              <h3>Fake projects are common</h3>
-              <p>Without live verification, copied projects look the same as real work.</p>
+              <div className="problem-icon">❓</div>
+              <h3>Fake projects are indistinguishable</h3>
+              <p>Without live verification, copied projects look identical to real work on paper.</p>
+            </div>
+          </div>
+
+          <div className="quote-block">
+            <p>"I've reviewed thousands of resumes. The ones with live projects always win. But most students never get to show them."</p>
+            <div className="quote-author">— Senior Engineering Manager, FAANG</div>
+          </div>
+        </div>
+      </section>
+
+      {/* Solution Section */}
+      <section id="solution" className="solution-section">
+        <div className="section-container">
+          <div className="solution-grid">
+            <div className="solution-left">
+              <h3>A resume that shows, not tells</h3>
+              <p style={{ color: 'var(--neutral-600)', marginBottom: '2rem' }}>
+                Techfoliyo is a professional profile designed for engineers. Instead of attaching files, you share one link.
+              </p>
+              <ul className="solution-list">
+                <li>Resume information — structured cleanly</li>
+                <li>Project portfolio with explanations</li>
+                <li>Proof of work — live demos, commits, architecture</li>
+                <li>Everything in one place, always updated</li>
+              </ul>
+            </div>
+            <div className="solution-right">
+              <h4>Your Techfoliyo becomes your:</h4>
+              <div className="profile-example">
+                <div>📄 <strong>Resume</strong> — Education, experience, skills</div>
+                <div style={{ marginTop: '0.5rem' }}>🎨 <strong>Portfolio</strong> — Projects that prove ability</div>
+                <div style={{ marginTop: '0.5rem' }}>📊 <strong>Documentation</strong> — Architecture, process, decisions</div>
+                <div style={{ marginTop: '0.5rem' }}>✅ <strong>Proof of work</strong> — Live demos, commits, deployments</div>
+                <div style={{ marginTop: '1.5rem', padding: '0.75rem', background: 'var(--blue-mist)', borderRadius: 'var(--radius-md)' }}>
+                  <span className="url">🔗 techfoliyo.com/yourname</span> — one link for everything
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1010,86 +1157,113 @@ function LandingPage() {
       {/* Features Section */}
       <section id="features" className="features-section">
         <div className="section-container">
-          <div className="section-header center" style={{ textAlign: 'center', margin: '0 auto 3rem' }}>
-            <h2>Built for engineers who mean business</h2>
-            <p>Every feature designed to showcase real engineering work.</p>
+          <div className="section-header center">
+            <h2>Everything in one place</h2>
+            <p>From resume to proof of work — all shareable with a single link.</p>
           </div>
 
           <div className="features-grid">
             <div className="feature-card">
-              <div className="feature-number">01</div>
-              <h3>Live Project Demo</h3>
-              <p>Each project includes a working deployment link so recruiters can test it instantly.</p>
+              <div className="feature-icon">📄</div>
+              <h3>Resume Section</h3>
+              <p>All traditional resume details structured cleanly. No formatting headaches. Always up to date.</p>
             </div>
             <div className="feature-card">
-              <div className="feature-number">02</div>
-              <h3>Project Authenticity Check</h3>
-              <p>Live demos + GitHub activity verification helps reduce fake or copied projects.</p>
+              <div className="feature-icon">🛠️</div>
+              <h3>Project Portfolio</h3>
+              <p>Projects with explanation, not just titles. Show architecture, process, and technical decisions.</p>
             </div>
             <div className="feature-card">
-              <div className="feature-number">03</div>
-              <h3>Single Portfolio Link</h3>
-              <p>One public profile link to share in job applications instead of just a resume.</p>
+              <div className="feature-icon">🔗</div>
+              <h3>One Link Everywhere</h3>
+              <p>Use in job applications, LinkedIn, emails, hackathons. One profile that represents all your work.</p>
             </div>
             <div className="feature-card">
-              <div className="feature-number">04</div>
-              <h3>Internship Drives</h3>
-              <p>Startups and companies evaluate students by directly checking live projects.</p>
+              <div className="feature-icon">✅</div>
+              <h3>Verifiable Work</h3>
+              <p>Live demos + GitHub activity verification helps distinguish real projects from copied ones.</p>
             </div>
             <div className="feature-card">
-              <div className="feature-number">05</div>
-              <h3>Like & Feedback</h3>
-              <p>Projects receive reactions and feedback to reflect engagement and appreciation.</p>
+              <div className="feature-icon">💬</div>
+              <h3>Feedback & Engagement</h3>
+              <p>Projects receive reactions and feedback to reflect engagement and appreciation from the community.</p>
             </div>
             <div className="feature-card">
-              <div className="feature-number">06</div>
-              <h3>Connect Feature</h3>
-              <p>Students and recruiters connect for collaboration, internships, or hiring.</p>
+              <div className="feature-icon">🤝</div>
+              <h3>Connect with Recruiters</h3>
+              <p>Students and recruiters connect directly for collaboration, internships, or hiring opportunities.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Audience Section */}
-      <section id="audience" className="audience-section">
+      {/* Comparison Section */}
+      <section id="comparison" className="comparison-section">
         <div className="section-container">
-          <div className="section-header center" style={{ textAlign: 'center', margin: '0 auto 3rem' }}>
-            <h2>Who is this platform for?</h2>
+          <div className="section-header center">
+            <h2>Different from other platforms</h2>
+            <p>Techfoliyo isn't another social network — it's your professional identity.</p>
           </div>
 
-          <div className="audience-grid">
-            <div className="audience-card">
-              <div className="audience-number">01</div>
-              <h3>Engineering Students</h3>
-              <p>Present your real work professionally and stand out from the crowd with live, verified projects.</p>
-            </div>
-            <div className="audience-card">
-              <div className="audience-number">02</div>
-              <h3>Recruiters & Companies</h3>
-              <p>Quickly evaluate working projects during internships and placements without running any code.</p>
-            </div>
-            <div className="audience-card">
-              <div className="audience-number">03</div>
-              <h3>Training & Placement Cells</h3>
-              <p>Simplify campus hiring with verified student project portfolios and direct recruiter connections.</p>
-            </div>
-          </div>
+          <table className="comparison-table">
+            <thead>
+              <tr>
+                <th>Platform</th>
+                <th>Purpose</th>
+                <th>Shows proof of work?</th>
+                <th>One link?</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="platform-name">Resume PDF</td>
+                <td>Static summary</td>
+                <td>❌</td>
+                <td>❌ (attachments)</td>
+              </tr>
+              <tr>
+                <td className="platform-name">LinkedIn</td>
+                <td>Career history</td>
+                <td>❌</td>
+                <td>✓</td>
+              </tr>
+              <tr>
+                <td className="platform-name">GitHub</td>
+                <td>Code repositories</td>
+                <td>⚠️ (code only)</td>
+                <td>✓</td>
+              </tr>
+              <tr>
+                <td className="platform-name">Portfolio website</td>
+                <td>Personal showcase</td>
+                <td>⚠️ (varies)</td>
+                <td>✓</td>
+              </tr>
+              <tr style={{ background: 'var(--blue-mist)' }}>
+                <td className="platform-name" style={{ fontWeight: 700, color: 'var(--blue-20)' }}>Techfoliyo</td>
+                <td>Hiring-ready engineer profile</td>
+                <td className="check-mark">✓✓</td>
+                <td className="check-mark">✓</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </section>
 
-      {/* Project Types Section */}
-      <section className="project-types-section">
+      {/* For Students & Recruiters */}
+      <section className="features-section" style={{ background: 'var(--white-50)' }}>
         <div className="section-container">
-          <h2>Supported Project Types</h2>
-          <div className="tags-container">
-            {[
-              "Software Engineering Projects",
-              "Full-Stack Web Applications",
-              "AI/ML Deployable Applications",
-              "SaaS/Web-based Systems"
-            ].map((item, i) => (
-              <span key={i} className="tag">{item}</span>
-            ))}
+          <div className="features-grid" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
+            <div className="feature-card" style={{ textAlign: 'center' }}>
+              <div className="feature-icon">👨‍🎓</div>
+              <h3>For Students</h3>
+              <p>Stop rewriting resumes for every application. Update once → everywhere updated. Your profile grows as you build.</p>
+            </div>
+            <div className="feature-card" style={{ textAlign: 'center' }}>
+              <div className="feature-icon">👔</div>
+              <h3>For Recruiters</h3>
+              <p>Stop guessing candidate ability. Evaluate engineers through actual work instead of claims. Understand skill depth in minutes.</p>
+            </div>
           </div>
         </div>
       </section>
@@ -1097,11 +1271,12 @@ function LandingPage() {
       {/* CTA Section */}
       <section className="cta-section">
         <div className="cta-content">
-          <h2>Ready to showcase your real work?</h2>
-          <p>Join thousands of engineers building professional portfolios through live project demonstrations.</p>
+          <h2>Replace your resume</h2>
+          <p>Create a profile you never have to redesign again. One link that proves what you can build.</p>
           <button className="cta-button-large" onClick={() => navigate("/signup")}>
-            Create Your Free Portfolio
+            Create Your Techfoliyo
           </button>
+          <div className="cta-small">Free for engineers · No credit card required</div>
         </div>
       </section>
 
@@ -1111,7 +1286,7 @@ function LandingPage() {
           <div>
             <div className="footer-logo">tech<span>foliyo</span></div>
             <p className="footer-desc">
-              Building bridges between engineers and recruiters through live project demonstrations.
+              Built for people who build things. Replace your resume PDF with a living profile that proves your skills.
             </p>
             <div className="footer-social">
               <span className="social-link">𝕏 Twitter</span>
@@ -1122,14 +1297,14 @@ function LandingPage() {
           <div className="footer-col">
             <h4>Platform</h4>
             <span className="footer-link" onClick={() => scrollToSection("features")}>Features</span>
-            <span className="footer-link" onClick={() => scrollToSection("audience")}>For Whom</span>
+            <span className="footer-link" onClick={() => scrollToSection("comparison")}>Comparison</span>
             <span className="footer-link">Pricing</span>
           </div>
           <div className="footer-col">
             <h4>Students</h4>
-            <span className="footer-link" onClick={() => navigate("/signup")}>Create Portfolio</span>
+            <span className="footer-link" onClick={() => navigate("/signup")}>Create Profile</span>
             <span className="footer-link" onClick={() => navigate("/login")}>Login</span>
-            <span className="footer-link">Browse Projects</span>
+            <span className="footer-link">Browse Engineers</span>
           </div>
           <div className="footer-col">
             <h4>Recruiters</h4>
@@ -1152,7 +1327,7 @@ function LandingPage() {
           </div>
         </div>
         <div className="footer-tagline">
-          Made with ❤️ for the engineering community
+          Built for people who build things.
         </div>
       </footer>
     </>

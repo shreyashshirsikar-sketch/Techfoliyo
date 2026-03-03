@@ -26,7 +26,7 @@ function Profile() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // User data state
+  // User data state (same as before)
   const [userData, setUserData] = useState({
     name: "Alex Rivera",
     headline: "Senior Full Stack Engineer & Open Source Contributor",
@@ -116,7 +116,7 @@ function Profile() {
     ]
   });
 
-  // Edit form state for all sections
+  // Edit form state (same as before)
   const [editForm, setEditForm] = useState({
     name: userData.name,
     headline: userData.headline,
@@ -130,6 +130,7 @@ function Profile() {
     portfolio: JSON.parse(JSON.stringify(userData.portfolio))
   });
 
+  // All the handler functions (same as before)
   const handleEditChange = (e) => {
     const { name, value } = e.target;
     setEditForm({ ...editForm, [name]: value });
@@ -386,27 +387,50 @@ function Profile() {
 
         .nav-right {
           display: flex;
-          gap: 1.5rem;
+          gap: 1rem;
           align-items: center;
         }
 
-        .nav-icon {
-          color: var(--neutral-500);
+        .icon-btn {
+          background: transparent;
+          border: none;
+          color: var(--neutral-600);
           cursor: pointer;
-          font-size: 1.3rem;
+          padding: 0.5rem;
+          transition: all 0.2s;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
+        }
+
+        .icon-btn:hover {
+          color: var(--blue-20);
+          background: var(--neutral-100);
+          transform: translateY(-1px);
         }
 
         .avatar-small {
           width: 40px;
           height: 40px;
           border-radius: 50%;
-          background: var(--blue-20);
+          background: linear-gradient(135deg, var(--blue-20), var(--blue-dark));
           display: flex;
           align-items: center;
           justify-content: center;
           color: var(--white-50);
           font-weight: 600;
           cursor: pointer;
+          transition: all 0.2s;
+          border: 2px solid transparent;
+        }
+
+        .avatar-small:hover {
+          transform: translateY(-1px);
+          box-shadow: var(--shadow-md);
+          border-color: var(--white-50);
         }
 
         /* Square Black Logout Button */
@@ -414,12 +438,16 @@ function Profile() {
           padding: 0.5rem 1.2rem;
           background: var(--black-40);
           border: none;
-          border-radius: 0;
+          border-radius: 8px;
           color: var(--white-50);
           font-weight: 600;
           font-size: 0.9rem;
           cursor: pointer;
           transition: all 0.2s;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          height: 40px;
         }
 
         .btn-logout:hover {
@@ -774,7 +802,7 @@ function Profile() {
         }
 
         .tech-tag-remove:hover {
-          color: var(--red-500);
+          color: #EF4444;
         }
 
         .add-tech-btn {
@@ -1106,6 +1134,9 @@ function Profile() {
           font-size: 0.875rem;
           cursor: pointer;
           transition: color 0.2s;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
         }
 
         .social-link:hover {
@@ -1207,7 +1238,7 @@ function Profile() {
 
         ::-webkit-scrollbar-thumb {
           background: var(--neutral-400);
-          border-radius: var(--radius-full);
+          border-radius: 9999px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
@@ -1222,15 +1253,36 @@ function Profile() {
             tech<span>folio</span>
           </div>
           <div className="nav-right">
-            <span className="nav-icon">✉</span>
-            <span className="nav-icon">🔔</span>
-            <div className="avatar-small" onClick={() => navigate("/profile")}>AR</div>
-            <button className="btn-logout" onClick={handleLogout}>Logout</button>
+            <button className="icon-btn" title="Messages">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+            <button className="icon-btn" title="Notifications">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 8C18 6.4087 17.3679 4.88258 16.2426 3.75736C15.1174 2.63214 13.5913 2 12 2C10.4087 2 8.88258 2.63214 7.75736 3.75736C6.63214 4.88258 6 6.4087 6 8C6 15 3 17 3 17H21C21 17 18 15 18 8Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M13.73 21C13.5542 21.3031 13.3019 21.5547 12.9982 21.7295C12.6946 21.9044 12.3504 21.9965 12 21.9965C11.6496 21.9965 11.3054 21.9044 11.0018 21.7295C10.6982 21.5547 10.4458 21.3031 10.27 21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+            <div className="avatar-small" onClick={() => navigate("/profile")}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 21V19C20 16.7909 18.2091 15 16 15H8C5.79086 15 4 16.7909 4 19V21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <button className="btn-logout" onClick={handleLogout}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M16 17L21 12L16 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M21 12H9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              Logout
+            </button>
           </div>
         </div>
       </nav>
 
-      {/* Main Content */}
+      {/* Main Content - same as before */}
       <div className="main-content">
         {/* Profile Header */}
         <div className="profile-header">
@@ -1240,8 +1292,20 @@ function Profile() {
                 <h1 className="profile-name">{userData.name}</h1>
                 <div className="profile-headline">{userData.headline}</div>
                 <div className="profile-meta">
-                  <span className="profile-meta-item">📍 {userData.location}</span>
-                  <span className="profile-meta-item">✉ {userData.email}</span>
+                  <span className="profile-meta-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path d="M12 21C12 21 20 15 20 10C20 5.58172 16.4183 2 12 2C7.58172 2 4 5.58172 4 10C4 15 12 21 12 21Z" strokeWidth="1.5"/>
+                      <circle cx="12" cy="10" r="3" strokeWidth="1.5"/>
+                    </svg>
+                    {userData.location}
+                  </span>
+                  <span className="profile-meta-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" strokeWidth="1.5"/>
+                      <path d="M22 6L12 13L2 6" strokeWidth="1.5"/>
+                    </svg>
+                    {userData.email}
+                  </span>
                 </div>
               </>
             ) : (
@@ -1282,14 +1346,25 @@ function Profile() {
         {/* Stats Grid */}
         <div className="stats-grid">
           <div className="stat-card">
-            <div className="stat-icon">👥</div>
+            <div className="stat-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M17 21V19C17 16.7909 15.2091 15 13 15H5C2.79086 15 1 16.7909 1 19V21" strokeWidth="1.5" strokeLinecap="round"/>
+                <circle cx="9" cy="7" r="4" strokeWidth="1.5" strokeLinecap="round"/>
+                <path d="M23 21V19C22.9986 17.1771 21.765 15.5857 20 15.13" strokeWidth="1.5" strokeLinecap="round"/>
+                <path d="M16 3.13C17.7699 3.58317 19.0074 5.17799 19.0074 7.005C19.0074 8.83201 17.7699 10.4268 16 10.88" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+            </div>
             <div className="stat-content">
               <span className="stat-value">{userData.connections}</span>
               <span className="stat-label">CONNECTIONS</span>
             </div>
           </div>
           <div className="stat-card">
-            <div className="stat-icon">⭐</div>
+            <div className="stat-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
             <div className="stat-content">
               <span className="stat-value">{userData.followers}</span>
               <span className="stat-label">FOLLOWERS</span>
@@ -1527,8 +1602,19 @@ function Profile() {
                     </div>
                     <div className="portfolio-footer">
                       <div className="portfolio-stats">
-                        <span>👁 {project.stats}</span>
-                        <span>❤️ {project.views}</span>
+                        <span>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M1 12C1 12 5 4 12 4C19 4 23 12 23 12C23 12 19 20 12 20C5 20 1 12 1 12Z" strokeWidth="1.5"/>
+                            <circle cx="12" cy="12" r="3" strokeWidth="1.5"/>
+                          </svg>
+                          {project.stats}
+                        </span>
+                        <span>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M12 21.35L10.55 20.03C5.4 15.36 2 12.27 2 8.5C2 5.41 4.42 3 7.5 3C9.24 3 10.91 3.81 12 5.08C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.41 22 8.5C22 12.27 18.6 15.36 13.45 20.03L12 21.35Z" strokeWidth="1.5"/>
+                          </svg>
+                          {project.views}
+                        </span>
                       </div>
                       <a href="#" className="portfolio-link">View Project →</a>
                     </div>
@@ -1577,7 +1663,7 @@ function Profile() {
                     </div>
                     <div className="form-row">
                       <div className="form-group">
-                        <label>Stats (Views)</label>
+                        <label>Views</label>
                         <input 
                           type="text" 
                           value={project.stats} 
@@ -1652,9 +1738,24 @@ function Profile() {
               Building bridges between engineers and recruiters through live project demonstrations.
             </p>
             <div className="footer-social">
-              <span className="social-link">𝕏 Twitter</span>
-              <span className="social-link">⌨️ GitHub</span>
-              <span className="social-link">💼 LinkedIn</span>
+              <span className="social-link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+                Twitter
+              </span>
+              <span className="social-link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C6.477 2 2 6.477 2 12c0 4.419 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.03-2.682-.103-.253-.447-1.27.098-2.646 0 0 .84-.269 2.75 1.025.8-.223 1.65-.334 2.5-.334.85 0 1.7.111 2.5.334 1.91-1.294 2.75-1.025 2.75-1.025.545 1.376.201 2.393.099 2.646.64.698 1.03 1.591 1.03 2.682 0 3.841-2.337 4.687-4.565 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
+                </svg>
+                GitHub
+              </span>
+              <span className="social-link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                </svg>
+                LinkedIn
+              </span>
             </div>
           </div>
           <div className="footer-col">

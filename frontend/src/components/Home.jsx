@@ -1,33 +1,177 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { getProjects } from "../api/projects";
+import { getProjects, searchProjects, getProjectsByCategory } from "../api/projects";
+import { getUsers, searchUsers } from "../api/users";
+import { useAuth } from "../context/AuthContext";
 
 function Home() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
-  const [filter, setFilter] = useState("Feed");
+  const [activeTab, setActiveTab] = useState("engineers");
+  const [engineers, setEngineers] = useState([]);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedSkills, setSelectedSkills] = useState([]);
+  const [selectedRole, setSelectedRole] = useState("");
+  const [selectedExperience, setSelectedExperience] = useState("");
+  const [selectedDomain, setSelectedDomain] = useState("");
+  const [selectedProjectStatus, setSelectedProjectStatus] = useState("");
+  const [selectedHasLiveDemo, setSelectedHasLiveDemo] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
+  
+  // Use refs to prevent unnecessary re-renders
+  const initialLoadRef = useRef(true);
+  const searchTimeoutRef = useRef(null);
+  const abortControllerRef = useRef(null);
 
-  // Fetch real projects
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        setLoading(true);
-        const response = await getProjects();
-        setProjects(response.data);
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Popular skills for filtering
+  const popularSkills = useMemo(() => 
+    ["React", "Python", "Java", "Node.js", "MongoDB", "TensorFlow", "Flutter", "AWS"], 
+  []);
 
-    fetchProjects();
+  // Domains for filtering
+  const domains = useMemo(() => [
+    "Web Development",
+    "Machine Learning",
+    "Mobile Development",
+    "Backend",
+    "Data Science",
+    "DevOps",
+    "IoT",
+    "Cybersecurity"
+  ], []);
+
+  // Experience levels
+  const experienceLevels = useMemo(() => 
+    ["Beginner", "Intermediate", "Advanced"], 
+  []);
+
+  // Memoized data transformation functions
+  const transformProjects = useCallback((projectsData) => {
+    if (!Array.isArray(projectsData)) return [];
+    
+    return projectsData.map(project => ({
+      id: project.id,
+      title: project.title,
+      creator: project.user?.username || project.creator || "Unknown",
+      creatorAvatar: (project.user?.username || project.creator || "U").charAt(0).toUpperCase(),
+      thumbnail: project.thumbnail || project.imageUrl || `https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=300&fit=crop`,
+      techStack: Array.isArray(project.techStack) 
+        ? project.techStack 
+        : (typeof project.techStack === 'string' ? project.techStack.split(',').map(t => t.trim()) : 
+           project.projectSkills?.map(ps => ps.skill?.name) || []),
+      description: project.description || project.summary || "",
+      status: project.isPublished ? "Completed" : "Ongoing",
+      hasLiveDemo: !!(project.liveUrl || project.demoUrl),
+      hasGitHub: !!(project.githubUrl || project.repoUrl),
+      domain: project.category || project.domain || "Web Development",
+      views: project.viewCount || project.views || Math.floor(Math.random() * 1000),
+      createdAt: project.createdAt,
+      difficulty: project.difficulty || "Intermediate",
+      featured: project.featured || false,
+      user: project.user
+    }));
   }, []);
 
-  // Scroll effect
+  const transformEngineers = useCallback((usersData) => {
+    if (!Array.isArray(usersData)) return [];
+    
+    return usersData.map(user => ({
+      id: user.id,
+      name: user.username || user.name,
+      role: user.role || user.title || "Developer",
+      avatar: user.profileImage || (user.username || user.name || "U").charAt(0).toUpperCase(),
+      skills: user.skills || user.userSkills?.map(us => us.skill?.name) || [],
+      college: user.college || user.institution || "University",
+      bio: user.bio || `Member since ${new Date(user.createdAt).toLocaleDateString()}`,
+      projectsCount: user.projects?.length || user.projectCount || 0,
+      availability: user.availability || "Open to opportunities",
+      experience: user.experienceLevel || "Intermediate",
+      profileImage: user.profileImage,
+      createdAt: user.createdAt
+    }));
+  }, []);
+
+  // Fetch data with abort controller
+  const fetchData = useCallback(async (signal) => {
+    try {
+      setLoading(true);
+      
+      if (activeTab === "projects") {
+        let projectsData;
+        
+        if (selectedDomain) {
+          projectsData = await getProjectsByCategory(selectedDomain, { signal });
+        } else if (searchQuery) {
+          projectsData = await searchProjects(searchQuery, { signal });
+        } else {
+          projectsData = await getProjects({ signal });
+        }
+        
+        setProjects(transformProjects(projectsData));
+      } else {
+        let usersData;
+        
+        if (searchQuery) {
+          usersData = await searchUsers(searchQuery, { signal });
+        } else {
+          usersData = await getUsers({ signal });
+        }
+        
+        setEngineers(transformEngineers(usersData));
+      }
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        console.log('Fetch aborted');
+        return;
+      }
+      console.error("Failed to fetch data:", error);
+      setProjects([]);
+      setEngineers([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [activeTab, selectedDomain, searchQuery, transformProjects, transformEngineers]);
+
+  // Handle data fetching with debounce and abort
+  useEffect(() => {
+    // Create new abort controller for this request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    
+    abortControllerRef.current = new AbortController();
+    const { signal } = abortControllerRef.current;
+
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    searchTimeoutRef.current = setTimeout(() => {
+      fetchData(signal);
+    }, 500);
+
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, [searchQuery, activeTab, selectedDomain, fetchData]);
+
+  // Initial load
+  useEffect(() => {
+    if (initialLoadRef.current) {
+      initialLoadRef.current = false;
+      fetchData(new AbortController().signal);
+    }
+  }, [fetchData]);
+
+  // Scroll effect with RAF for performance
   useEffect(() => {
     let ticking = false;
     
@@ -45,120 +189,99 @@ function Home() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Different images for different filters
-  const feedImages = [
-    "https://images.unsplash.com/photo-1555066931-4365d14bab8c",
-    "https://images.unsplash.com/photo-1519389950473-47ba0277781c",
-    "https://images.unsplash.com/photo-1551288049-bebda4e38f71",
-    "https://images.unsplash.com/photo-1551650975-87deedd944c3",
-    "https://images.unsplash.com/photo-1522202176988-66273c2fd55f",
-    "https://images.unsplash.com/photo-1677442136019-21780ecad995",
-    "https://images.unsplash.com/photo-1504639725590-34d0984388bd",
-    "https://images.unsplash.com/photo-1498050108023-c5249f4df085"
-  ];
-
-  const trendingImages = [
-    "https://images.unsplash.com/photo-1522071820081-009f0129c71c",
-    "https://images.unsplash.com/photo-1460925895917-afdab827c52f",
-    "https://images.unsplash.com/photo-1551288049-bebda4e38f71",
-    "https://images.unsplash.com/photo-1551650975-87deedd944c3",
-    "https://images.unsplash.com/photo-1519389950473-47ba0277781c",
-    "https://images.unsplash.com/photo-1555066931-4365d14bab8c",
-    "https://images.unsplash.com/photo-1522202176988-66273c2fd55f",
-    "https://images.unsplash.com/photo-1677442136019-21780ecad995"
-  ];
-
-  const mlImages = [
-    "https://images.unsplash.com/photo-1555949963-aa79dcee981c",
-    "https://images.unsplash.com/photo-1551288049-bebda4e38f71",
-    "https://images.unsplash.com/photo-1551650975-87deedd944c3",
-    "https://images.unsplash.com/photo-1522071820081-009f0129c71c",
-    "https://images.unsplash.com/photo-1460925895917-afdab827c52f",
-    "https://images.unsplash.com/photo-1519389950473-47ba0277781c",
-    "https://images.unsplash.com/photo-1555066931-4365d14bab8c",
-    "https://images.unsplash.com/photo-1498050108023-c5249f4df085"
-  ];
-
-  const webImages = [
-    "https://images.unsplash.com/photo-1460925895917-afdab827c52f",
-    "https://images.unsplash.com/photo-1551288049-bebda4e38f71",
-    "https://images.unsplash.com/photo-1551650975-87deedd944c3",
-    "https://images.unsplash.com/photo-1522071820081-009f0129c71c",
-    "https://images.unsplash.com/photo-1555949963-aa79dcee981c",
-    "https://images.unsplash.com/photo-1519389950473-47ba0277781c",
-    "https://images.unsplash.com/photo-1555066931-4365d14bab8c",
-    "https://images.unsplash.com/photo-1498050108023-c5249f4df085"
-  ];
-
-  const openSourceImages = [
-    "https://images.unsplash.com/photo-1551288049-bebda4e38f71",
-    "https://images.unsplash.com/photo-1522071820081-009f0129c71c",
-    "https://images.unsplash.com/photo-1460925895917-afdab827c52f",
-    "https://images.unsplash.com/photo-1551650975-87deedd944c3",
-    "https://images.unsplash.com/photo-1555949963-aa79dcee981c",
-    "https://images.unsplash.com/photo-1519389950473-47ba0277781c",
-    "https://images.unsplash.com/photo-1555066931-4365d14bab8c",
-    "https://images.unsplash.com/photo-1498050108023-c5249f4df085"
-  ];
-
-  // Get images based on filter
-  const getImages = () => {
-    switch(filter) {
-      case "Trending": return trendingImages;
-      case "Machine Learning": return mlImages;
-      case "Web Development": return webImages;
-      case "Open Source": return openSourceImages;
-      default: return feedImages;
-    }
-  };
-
-  // Get filtered projects based on filter and search
-  const getFilteredProjects = () => {
-    if (!projects || projects.length === 0) {
-      return [];
-    }
-
-    // Filter by category
-    let filtered = [...projects];
+  // Filter functions with useMemo
+  const filteredEngineers = useMemo(() => {
+    if (!engineers.length) return [];
     
-    if (filter !== "Feed") {
-      filtered = projects.filter(project => 
-        project.category === filter || 
-        (project.tags && project.tags.includes(filter))
+    let filtered = [...engineers];
+
+    if (selectedSkills.length > 0) {
+      filtered = filtered.filter(engineer =>
+        selectedSkills.every(skill => 
+          engineer.skills?.some(s => s.toLowerCase().includes(skill.toLowerCase()))
+        )
       );
     }
 
-    // Filter by search query
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
+    if (selectedRole) {
+      filtered = filtered.filter(engineer => 
+        engineer.role?.toLowerCase().includes(selectedRole.toLowerCase())
+      );
+    }
+
+    if (selectedExperience) {
+      filtered = filtered.filter(engineer => 
+        engineer.experience === selectedExperience
+      );
+    }
+
+    return filtered;
+  }, [engineers, selectedSkills, selectedRole, selectedExperience]);
+
+  const filteredProjects = useMemo(() => {
+    if (!projects.length) return [];
+    
+    let filtered = [...projects];
+
+    if (selectedDomain) {
       filtered = filtered.filter(project => 
-        project.title?.toLowerCase().includes(query) ||
-        project.description?.toLowerCase().includes(query) ||
-        project.summary?.toLowerCase().includes(query) ||
-        project.user?.username?.toLowerCase().includes(query) ||
-        (project.tags && project.tags.some(tag => tag.toLowerCase().includes(query)))
+        project.domain === selectedDomain
       );
     }
 
-    // Format for display
-    return filtered.map(project => ({
-      title: project.title || "Untitled Project",
-      desc: project.description || project.summary || "No description available",
-      tech: project.techStack ? 
-        (Array.isArray(project.techStack) ? project.techStack : project.techStack.split(',').map(t => t.trim())) 
-        : ["React", "Node.js"],
-      author: project.user?.username || project.author || "Unknown",
-      likes: project.likes ? 
-        (project.likes > 999 ? (project.likes/1000).toFixed(1) + 'k' : project.likes.toString()) 
-        : "0",
-      views: project.views ? 
-        (project.views > 999 ? (project.views/1000).toFixed(1) + 'k' : project.views.toString()) 
-        : "0"
-    }));
-  };
+    if (selectedProjectStatus) {
+      filtered = filtered.filter(project => 
+        project.status === selectedProjectStatus
+      );
+    }
 
-  // Loading state
-  if (loading) {
+    if (selectedHasLiveDemo) {
+      const hasLive = selectedHasLiveDemo === "Yes";
+      filtered = filtered.filter(project => 
+        project.hasLiveDemo === hasLive
+      );
+    }
+
+    return filtered;
+  }, [projects, selectedDomain, selectedProjectStatus, selectedHasLiveDemo]);
+
+  // Clear filters
+  const clearFilters = useCallback(() => {
+    setSelectedSkills([]);
+    setSelectedRole("");
+    setSelectedExperience("");
+    setSelectedDomain("");
+    setSelectedProjectStatus("");
+    setSelectedHasLiveDemo("");
+  }, []);
+
+  // Handle tab change
+  const handleTabChange = useCallback((tab) => {
+    setActiveTab(tab);
+    setSearchQuery("");
+    clearFilters();
+  }, [clearFilters]);
+
+  // Handle skill selection
+  const handleSkillToggle = useCallback((skill) => {
+    setSelectedSkills(prev => 
+      prev.includes(skill) 
+        ? prev.filter(s => s !== skill)
+        : [...prev, skill]
+    );
+  }, []);
+
+  // Handle category click
+  const handleCategoryClick = useCallback((category) => {
+    if (activeTab === "engineers") {
+      setSelectedSkills([category]);
+      setSearchQuery(category);
+    } else {
+      setSelectedDomain(category);
+    }
+  }, [activeTab]);
+
+  if (loading && !engineers.length && !projects.length && initialLoadRef.current) {
     return (
       <div style={{ 
         display: 'flex', 
@@ -168,16 +291,18 @@ function Home() {
         fontFamily: 'var(--font-body)',
         color: 'var(--neutral-600)'
       }}>
-        Loading projects...
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>🚀</div>
+          <div>Loading directory...</div>
+        </div>
       </div>
     );
   }
 
-  const displayedProjects = getFilteredProjects();
-
   return (
     <>
       <style>{`
+        /* Your existing styles remain exactly the same */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
         * {
@@ -192,7 +317,7 @@ function Home() {
           --blue-dark: #1D4ED8;
           --blue-light: #3B82F6;
           --blue-soft: #60A5FA;
-          --blue-mist: #EFF6FF;
+          --blue-mist: #EFF6FC;
           
           --black-40: #0A0A0A;
           --black-light: #1A1A1A;
@@ -224,6 +349,19 @@ function Home() {
           --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
           --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
           --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+          
+          /* Border Radius */
+          --radius-sm: 6px;
+          --radius-md: 8px;
+          --radius-lg: 12px;
+          --radius-xl: 16px;
+          --radius-full: 9999px;
+          
+          /* Status Colors */
+          --green-500: #10B981;
+          --green-100: #D1FAE5;
+          --green-700: #047857;
+          --orange-500: #F59E0B;
         }
 
         body {
@@ -287,63 +425,53 @@ function Home() {
 
         .nav-right {
           display: flex;
-          gap: 1.5rem;
+          gap: 1rem;
           align-items: center;
         }
 
         .icon-btn {
           background: transparent;
           border: none;
-          color: var(--black-40);
+          color: var(--neutral-600);
           font-size: 1.3rem;
           cursor: pointer;
-          padding: 0.25rem;
-          transition: color 0.2s;
+          padding: 0.5rem;
+          transition: all 0.2s;
+          border-radius: var(--radius-md);
           display: flex;
           align-items: center;
           justify-content: center;
           line-height: 1;
-          font-family: 'Inter', sans-serif;
-          font-weight: 300;
         }
 
         .icon-btn:hover {
           color: var(--blue-20);
-        }
-
-        .btn-create {
-          background: var(--black-40);
-          color: var(--white-50);
-          border: none;
-          padding: 0.5rem 1.25rem;
-          font-size: 0.9375rem;
-          font-weight: 500;
-          cursor: pointer;
-          border-radius: 0px;
-          transition: none;
+          background: var(--neutral-100);
         }
 
         .avatar {
           width: 36px;
           height: 36px;
-          border-radius: 50%;
-          background: var(--neutral-200);
+          border-radius: var(--radius-full);
+          background: var(--blue-20);
           display: flex;
           align-items: center;
           justify-content: center;
-          color: var(--neutral-600);
-          font-size: 1rem;
+          color: var(--white-50);
+          font-size: 0.875rem;
+          font-weight: 600;
           cursor: pointer;
           transition: all 0.2s;
         }
 
         .avatar:hover {
-          background: var(--blue-20);
-          color: var(--white-50);
+          background: var(--blue-dark);
+          transform: translateY(-1px);
+          box-shadow: var(--shadow-md);
         }
 
-        /* Search Bar */
-        .search-section {
+        /* Global Search */
+        .global-search-section {
           padding-top: 90px;
           max-width: 1400px;
           margin: 0 auto;
@@ -352,151 +480,365 @@ function Home() {
         }
 
         @media (min-width: 768px) {
-          .search-section {
+          .global-search-section {
             padding-left: 4rem;
             padding-right: 4rem;
           }
         }
 
-        .search-bar {
+        .global-search-bar {
           width: 100%;
-          padding: 0.9rem 1.2rem;
+          padding: 1rem 1.5rem;
           border: 1px solid var(--neutral-200);
-          border-radius: 12px;
-          font-size: 0.95rem;
+          border-radius: var(--radius-lg);
+          font-size: 1rem;
           outline: none;
           transition: all 0.2s;
-          margin-bottom: 2rem;
+          margin-bottom: 1.5rem;
+          font-family: var(--font-body);
+          box-shadow: var(--shadow-sm);
         }
 
-        .search-bar:focus {
+        .global-search-bar:focus {
           border-color: var(--blue-20);
           box-shadow: 0 0 0 4px var(--blue-mist);
         }
 
-        /* Main Content */
-        .main-content {
+        /* Main Layout */
+        .main-layout {
           max-width: 1400px;
           margin: 0 auto;
           padding-left: 2rem;
           padding-right: 2rem;
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 2rem;
         }
 
-        @media (min-width: 768px) {
-          .main-content {
+        @media (min-width: 1024px) {
+          .main-layout {
+            grid-template-columns: 280px 1fr;
             padding-left: 4rem;
             padding-right: 4rem;
           }
         }
 
-        /* Welcome Section */
-        .welcome-section {
+        /* Filters Sidebar */
+        .filters-sidebar {
+          background: var(--white-50);
+          border: 1px solid var(--neutral-200);
+          border-radius: var(--radius-lg);
+          padding: 1.5rem;
+          height: fit-content;
+        }
+
+        .filters-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
           margin-bottom: 1.5rem;
         }
 
-        .welcome-title {
-          font-family: var(--font-display);
-          font-size: 1.8rem;
-          font-weight: 700;
-          color: var(--black-40);
-          margin-bottom: 0.25rem;
-        }
-
-        .welcome-subtitle {
-          color: var(--neutral-600);
+        .filters-header h3 {
           font-size: 1rem;
+          font-weight: 600;
+          color: var(--neutral-700);
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
         }
 
-        /* Filter Pills - White */
-        .filter-section {
-          margin-bottom: 2rem;
-        }
-
-        .filter-pills {
-          display: flex;
-          gap: 0.75rem;
-          flex-wrap: wrap;
-        }
-
-        .pill {
-          padding: 0.5rem 1.25rem;
-          border-radius: 0px;
-          background: var(--white-50);
-          border: 1px solid var(--neutral-200);
-          color: var(--neutral-600);
+        .clear-filters {
+          color: var(--blue-20);
           font-size: 0.875rem;
-          font-weight: 500;
           cursor: pointer;
-          transition: none;
+          background: none;
+          border: none;
+          padding: 0.25rem 0.5rem;
+          border-radius: var(--radius-sm);
+          transition: all 0.2s;
         }
 
-        .pill:hover {
+        .clear-filters:hover {
+          background: var(--blue-mist);
+        }
+
+        .filter-group {
+          margin-bottom: 1.5rem;
+        }
+
+        .filter-label {
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: var(--neutral-700);
+          margin-bottom: 1rem;
+        }
+
+        .skills-container {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+        }
+
+        .skill-chip {
+          padding: 0.4rem 1rem;
+          background: var(--neutral-100);
+          border: 1px solid var(--neutral-200);
+          border-radius: var(--radius-full);
+          font-size: 0.8125rem;
+          color: var(--neutral-600);
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .skill-chip:hover {
           background: var(--blue-mist);
           border-color: var(--blue-20);
           color: var(--blue-20);
         }
 
-        .pill.active {
+        .skill-chip.selected {
           background: var(--blue-20);
           border-color: var(--blue-20);
           color: var(--white-50);
         }
 
-        /* Projects Grid */
-        .projects-grid {
+        .filter-select {
+          width: 100%;
+          padding: 0.6rem;
+          border: 1px solid var(--neutral-200);
+          border-radius: var(--radius-md);
+          font-size: 0.875rem;
+          color: var(--neutral-700);
+          outline: none;
+          background: var(--white-50);
+          cursor: pointer;
+        }
+
+        /* Mode Switch */
+        .mode-switch {
+          display: flex;
+          gap: 0.5rem;
+          margin-bottom: 2rem;
+          background: var(--neutral-100);
+          padding: 0.25rem;
+          border-radius: var(--radius-lg);
+          width: fit-content;
+        }
+
+        .mode-btn {
+          padding: 0.6rem 1.5rem;
+          border: none;
+          background: transparent;
+          color: var(--neutral-600);
+          font-size: 0.9375rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s;
+          border-radius: var(--radius-md);
+        }
+
+        .mode-btn.active {
+          background: var(--white-50);
+          color: var(--blue-20);
+          box-shadow: var(--shadow-sm);
+        }
+
+        /* Results Grid */
+        .results-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 1.5rem;
+        }
+
+        .results-count {
+          color: var(--neutral-600);
+          font-size: 0.9375rem;
+        }
+
+        .results-grid {
           display: grid;
-          grid-template-columns: repeat(1, 1fr);
+          grid-template-columns: 1fr;
           gap: 1.5rem;
           margin-bottom: 3rem;
         }
 
-        @media (min-width: 640px) {
-          .projects-grid {
+        @media (min-width: 768px) {
+          .results-grid {
             grid-template-columns: repeat(2, 1fr);
           }
         }
 
-        @media (min-width: 1024px) {
-          .projects-grid {
-            grid-template-columns: repeat(3, 1fr);
-          }
+        /* Engineer Card */
+        .engineer-card {
+          background: var(--white-50);
+          border: 1px solid var(--neutral-200);
+          border-radius: var(--radius-lg);
+          padding: 1.5rem;
+          transition: all 0.3s ease;
+          cursor: pointer;
         }
 
-        @media (min-width: 1280px) {
-          .projects-grid {
-            grid-template-columns: repeat(4, 1fr);
-          }
+        .engineer-card:hover {
+          transform: translateY(-4px);
+          box-shadow: var(--shadow-lg);
+          border-color: var(--blue-20);
         }
 
-        /* Project Card - No hover effects */
+        .engineer-header {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          margin-bottom: 1rem;
+        }
+
+        .engineer-avatar {
+          width: 48px;
+          height: 48px;
+          border-radius: var(--radius-full);
+          background: var(--blue-20);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--white-50);
+          font-weight: 600;
+          font-size: 1.125rem;
+          overflow: hidden;
+        }
+
+        .engineer-avatar img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .engineer-info h4 {
+          font-size: 1.125rem;
+          font-weight: 600;
+          margin-bottom: 0.25rem;
+        }
+
+        .engineer-info p {
+          color: var(--neutral-500);
+          font-size: 0.875rem;
+        }
+
+        .engineer-bio {
+          color: var(--neutral-600);
+          font-size: 0.875rem;
+          margin-bottom: 1rem;
+          line-height: 1.5;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        .engineer-skills {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+          margin-bottom: 1rem;
+        }
+
+        .engineer-skill {
+          background: var(--blue-mist);
+          color: var(--blue-20);
+          font-size: 0.75rem;
+          font-weight: 500;
+          padding: 0.25rem 0.75rem;
+          border-radius: var(--radius-full);
+        }
+
+        .engineer-meta {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          font-size: 0.875rem;
+          color: var(--neutral-500);
+          padding-top: 1rem;
+          border-top: 1px solid var(--neutral-200);
+        }
+
+        .engineer-college {
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+        }
+
+        .engineer-projects {
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+        }
+
+        .availability-badge {
+          background: var(--green-100);
+          color: var(--green-700);
+          font-size: 0.75rem;
+          padding: 0.25rem 0.75rem;
+          border-radius: var(--radius-full);
+        }
+
+        /* Project Card */
         .project-card {
           background: var(--white-50);
           border: 1px solid var(--neutral-200);
-          border-radius: 16px;
+          border-radius: var(--radius-lg);
           overflow: hidden;
-          box-shadow: var(--shadow-sm);
-          transition: none;
+          transition: all 0.3s ease;
+          cursor: pointer;
         }
 
-        .project-image {
+        .project-card:hover {
+          transform: translateY(-4px);
+          box-shadow: var(--shadow-lg);
+          border-color: var(--blue-20);
+        }
+
+        .project-thumbnail {
           height: 160px;
           background-size: cover;
           background-position: center;
+          background-color: var(--neutral-200);
         }
 
         .project-content {
           padding: 1.25rem;
         }
 
-        .project-title {
-          font-family: var(--font-display);
+        .project-header {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          margin-bottom: 0.75rem;
+        }
+
+        .project-creator-avatar {
+          width: 28px;
+          height: 28px;
+          border-radius: var(--radius-full);
+          background: var(--blue-20);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--white-50);
+          font-size: 0.75rem;
           font-weight: 600;
+        }
+
+        .project-creator {
+          font-size: 0.875rem;
+          color: var(--neutral-600);
+        }
+
+        .project-title {
           font-size: 1.125rem;
-          color: var(--black-40);
+          font-weight: 600;
           margin-bottom: 0.5rem;
         }
 
-        .project-desc {
+        .project-description {
           font-size: 0.875rem;
           color: var(--neutral-600);
           margin-bottom: 1rem;
@@ -507,20 +849,19 @@ function Home() {
           overflow: hidden;
         }
 
-        .project-tags {
+        .project-tech {
           display: flex;
-          gap: 0.5rem;
           flex-wrap: wrap;
+          gap: 0.5rem;
           margin-bottom: 1rem;
         }
 
-        .project-tag {
-          background: var(--blue-mist);
-          color: var(--blue-20);
+        .project-tech-tag {
+          background: var(--neutral-100);
+          color: var(--neutral-600);
           font-size: 0.75rem;
-          font-weight: 500;
           padding: 0.25rem 0.75rem;
-          border-radius: 100px;
+          border-radius: var(--radius-full);
         }
 
         .project-meta {
@@ -529,61 +870,66 @@ function Home() {
           justify-content: space-between;
           font-size: 0.875rem;
           color: var(--neutral-500);
+          padding-top: 0.75rem;
+          border-top: 1px solid var(--neutral-200);
         }
 
-        .project-author {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
-
-        .author-avatar {
-          width: 24px;
-          height: 24px;
-          border-radius: 50%;
-          background: var(--neutral-200);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: var(--neutral-600);
-          font-size: 0.75rem;
-          font-weight: 600;
-        }
-
-        .project-stats {
-          display: flex;
-          gap: 0.75rem;
-        }
-
-        .stat {
+        .project-status {
           display: flex;
           align-items: center;
           gap: 0.25rem;
         }
 
-        /* Show More Button - Square */
-        .show-more-container {
-          text-align: center;
-          margin: 3rem 0 4rem;
+        .status-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: var(--radius-full);
+          background: var(--green-500);
         }
 
-        .show-more-btn {
-          background: transparent;
-          border: 1px solid var(--neutral-200);
-          color: var(--neutral-600);
-          padding: 0.75rem 2rem;
-          border-radius: 0px;
+        .status-dot.ongoing {
+          background: var(--orange-500);
+        }
+
+        .project-stats {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
+
+        .explore-categories {
+          margin-top: 3rem;
+          padding: 2rem 0;
+          border-top: 1px solid var(--neutral-200);
+        }
+
+        .categories-title {
+          font-size: 1rem;
+          font-weight: 600;
+          color: var(--neutral-700);
+          margin-bottom: 1.5rem;
+        }
+
+        .categories-grid {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 1rem;
+        }
+
+        .category-item {
+          padding: 0.5rem 1.5rem;
+          background: var(--neutral-100);
+          border-radius: var(--radius-full);
           font-size: 0.875rem;
-          font-weight: 500;
+          color: var(--neutral-600);
           cursor: pointer;
           transition: all 0.2s;
         }
 
-        .show-more-btn:hover {
-          border-color: var(--blue-20);
-          color: var(--blue-20);
-          transform: translateY(-1px);
-          box-shadow: var(--shadow-md);
+        .category-item:hover {
+          background: var(--blue-20);
+          color: var(--white-50);
+          transform: translateY(-2px);
         }
 
         /* Footer */
@@ -591,122 +937,37 @@ function Home() {
           background: var(--black-40);
           color: var(--white-50);
           padding: 4rem 2rem 2rem;
+          margin-top: 4rem;
         }
 
-        @media (min-width: 768px) {
-          .footer {
-            padding: 4rem 4rem 2rem;
-          }
-        }
-
-        .footer-grid {
+        .footer-content {
           max-width: 1400px;
           margin: 0 auto;
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 2rem;
-          margin-bottom: 3rem;
+          padding: 0 2rem;
         }
 
-        @media (min-width: 768px) {
-          .footer-grid {
-            grid-template-columns: 2fr repeat(4, 1fr);
-            gap: 3rem;
-          }
+        .footer-tagline {
+          text-align: center;
+          color: var(--neutral-500);
+          font-size: 0.875rem;
         }
 
-        .footer-logo {
-          font-family: var(--font-display);
-          font-size: 1.5rem;
-          font-weight: 800;
-          margin-bottom: 1rem;
+        .loading-skeleton {
+          animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
+        }
+
+        .featured-badge {
+          background: var(--orange-500);
           color: var(--white-50);
-        }
-
-        .footer-logo span {
-          color: var(--blue-20);
-        }
-
-        .footer-desc {
-          color: var(--neutral-400);
-          font-size: 0.875rem;
-          line-height: 1.6;
-          margin-bottom: 1.5rem;
-          max-width: 300px;
-        }
-
-        .footer-social {
-          display: flex;
-          gap: 1.5rem;
-        }
-
-        .social-link {
-          color: var(--neutral-400);
-          font-size: 0.875rem;
-          cursor: pointer;
-          transition: color 0.2s;
-        }
-
-        .social-link:hover {
-          color: var(--blue-20);
-        }
-
-        .footer-col h4 {
-          font-size: 0.875rem;
-          font-weight: 600;
-          margin-bottom: 1.25rem;
-          color: var(--white-50);
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-        }
-
-        .footer-link {
-          display: block;
-          color: var(--neutral-400);
-          text-decoration: none;
-          font-size: 0.875rem;
-          margin-bottom: 0.75rem;
-          cursor: pointer;
-          transition: color 0.2s;
-        }
-
-        .footer-link:hover {
-          color: var(--blue-20);
-        }
-
-        .footer-bottom {
-          max-width: 1400px;
-          margin: 0 auto;
-          padding-top: 2rem;
-          border-top: 1px solid var(--neutral-800);
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-          color: var(--neutral-400);
-          font-size: 0.8125rem;
-        }
-
-        @media (min-width: 768px) {
-          .footer-bottom {
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-          }
-        }
-
-        .footer-bottom-links {
-          display: flex;
-          gap: 2rem;
-        }
-
-        .footer-bottom-links span {
-          cursor: pointer;
-          transition: color 0.2s;
-          color: var(--neutral-400);
-        }
-
-        .footer-bottom-links span:hover {
-          color: var(--blue-20);
+          font-size: 0.75rem;
+          padding: 0.25rem 0.75rem;
+          border-radius: var(--radius-full);
+          margin-left: 0.5rem;
         }
       `}</style>
 
@@ -717,142 +978,348 @@ function Home() {
             tech<span>foliyo</span>
           </div>
           <div className="nav-right">
-            <button className="icon-btn">✉</button>
-            <button className="icon-btn">🔔</button>
-            <button className="btn-create">+ Create Project</button>
-            <div className="avatar" onClick={() => navigate("/profile")}>👤</div>
+            <button className="icon-btn" onClick={() => navigate("/messages")} aria-label="Messages">✉</button>
+            <button className="icon-btn" onClick={() => navigate("/notifications")} aria-label="Notifications">🔔</button>
+            <div 
+              className="avatar" 
+              onClick={() => navigate("/profile")}
+              aria-label="Profile"
+            >
+              {user?.profileImage ? (
+                <img src={user.profileImage} alt={user.username} />
+              ) : (
+                user?.username?.charAt(0).toUpperCase() || 'U'
+              )}
+            </div>
           </div>
         </div>
       </nav>
 
-      {/* Search Bar */}
-      <div className="search-section">
-        <input 
-          type="text" 
-          className="search-bar" 
-          placeholder="Search for projects, developers, or tech stacks..."
+      {/* Global Search */}
+      <div className="global-search-section">
+        <input
+          type="text"
+          className="global-search-bar"
+          placeholder={`Search ${activeTab === "engineers" ? "engineers by name, skills, or college..." : "projects by title, tech stack, or creator..."}`}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          aria-label="Search"
         />
       </div>
 
-      {/* Main Content */}
-      <div className="main-content">
-        {/* Welcome Section */}
-        <div className="welcome-section">
-          <h1 className="welcome-title">Welcome back, Alex</h1>
-          <p className="welcome-subtitle">Discover projects from the community</p>
-        </div>
-
-        {/* Filter Pills - White */}
-        <div className="filter-section">
-          <div className="filter-pills">
-            {["Feed", "Trending", "Machine Learning", "Web Development", "Open Source"].map((pill) => (
-              <div 
-                key={pill}
-                className={`pill ${filter === pill ? 'active' : ''}`}
-                onClick={() => setFilter(pill)}
-              >
-                {pill}
-              </div>
-            ))}
+      {/* Main Layout */}
+      <div className="main-layout">
+        {/* Filters Sidebar */}
+        <aside className="filters-sidebar">
+          <div className="filters-header">
+            <h3>Filters</h3>
+            <button className="clear-filters" onClick={clearFilters}>
+              Clear all
+            </button>
           </div>
-        </div>
 
-        {/* Projects Grid with real data */}
-        <div className="projects-grid">
-          {displayedProjects.length > 0 ? (
-            displayedProjects.slice(0, 8).map((project, i) => (
-              <div className="project-card" key={i}>
-                <div 
-                  className="project-image"
-                  style={{ backgroundImage: `url(${getImages()[i % getImages().length]})` }}
-                />
-                <div className="project-content">
-                  <h3 className="project-title">{project.title}</h3>
-                  <p className="project-desc">{project.desc}</p>
-                  <div className="project-tags">
-                    {project.tech.slice(0, 3).map((t, idx) => (
-                      <span key={idx} className="project-tag">{t}</span>
-                    ))}
-                  </div>
-                  <div className="project-meta">
-                    <div className="project-author">
-                      <div className="author-avatar">{project.author.charAt(0)}</div>
-                      <span>{project.author}</span>
-                    </div>
-                    <div className="project-stats">
-                      <span className="stat">❤ {project.likes}</span>
-                      <span className="stat">👁 {project.views}</span>
-                    </div>
-                  </div>
+          {activeTab === "engineers" ? (
+            <>
+              {/* Skills Filter */}
+              <div className="filter-group">
+                <div className="filter-label">Skills</div>
+                <div className="skills-container">
+                  {popularSkills.map(skill => (
+                    <span
+                      key={skill}
+                      className={`skill-chip ${selectedSkills.includes(skill) ? 'selected' : ''}`}
+                      onClick={() => handleSkillToggle(skill)}
+                    >
+                      {skill}
+                    </span>
+                  ))}
                 </div>
               </div>
-            ))
+
+              {/* Role Filter */}
+              <div className="filter-group">
+                <div className="filter-label">Role</div>
+                <select 
+                  className="filter-select"
+                  value={selectedRole}
+                  onChange={(e) => setSelectedRole(e.target.value)}
+                  aria-label="Filter by role"
+                >
+                  <option value="">All Roles</option>
+                  <option value="Frontend">Frontend Developer</option>
+                  <option value="Backend">Backend Engineer</option>
+                  <option value="Full Stack">Full Stack Developer</option>
+                  <option value="ML">AI/ML Engineer</option>
+                  <option value="Mobile">Mobile Developer</option>
+                  <option value="Data">Data Scientist</option>
+                </select>
+              </div>
+
+              {/* Experience Level */}
+              <div className="filter-group">
+                <div className="filter-label">Experience</div>
+                <select 
+                  className="filter-select"
+                  value={selectedExperience}
+                  onChange={(e) => setSelectedExperience(e.target.value)}
+                  aria-label="Filter by experience"
+                >
+                  <option value="">All Levels</option>
+                  {experienceLevels.map(level => (
+                    <option key={level} value={level}>{level}</option>
+                  ))}
+                </select>
+              </div>
+            </>
           ) : (
-            <div style={{ 
-              gridColumn: '1 / -1', 
-              textAlign: 'center', 
-              padding: '3rem',
-              color: 'var(--neutral-500)'
-            }}>
-              {searchQuery ? `No projects found matching "${searchQuery}"` : "No projects found for this filter."}
+            <>
+              {/* Project Filters */}
+              <div className="filter-group">
+                <div className="filter-label">Domain</div>
+                <select 
+                  className="filter-select"
+                  value={selectedDomain}
+                  onChange={(e) => setSelectedDomain(e.target.value)}
+                  aria-label="Filter by domain"
+                >
+                  <option value="">All Domains</option>
+                  {domains.map(domain => (
+                    <option key={domain} value={domain}>{domain}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="filter-group">
+                <div className="filter-label">Status</div>
+                <select 
+                  className="filter-select"
+                  value={selectedProjectStatus}
+                  onChange={(e) => setSelectedProjectStatus(e.target.value)}
+                  aria-label="Filter by status"
+                >
+                  <option value="">All Projects</option>
+                  <option value="Completed">Completed</option>
+                  <option value="Ongoing">Ongoing</option>
+                </select>
+              </div>
+
+              <div className="filter-group">
+                <div className="filter-label">Has Live Demo</div>
+                <select 
+                  className="filter-select"
+                  value={selectedHasLiveDemo}
+                  onChange={(e) => setSelectedHasLiveDemo(e.target.value)}
+                  aria-label="Filter by live demo"
+                >
+                  <option value="">Any</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </div>
+            </>
+          )}
+        </aside>
+
+        {/* Main Content */}
+        <main>
+          {/* Mode Switch */}
+          <div className="mode-switch">
+            <button
+              className={`mode-btn ${activeTab === "engineers" ? "active" : ""}`}
+              onClick={() => handleTabChange("engineers")}
+            >
+              👨‍💻 Explore Engineers
+            </button>
+            <button
+              className={`mode-btn ${activeTab === "projects" ? "active" : ""}`}
+              onClick={() => handleTabChange("projects")}
+            >
+              🚀 Explore Projects
+            </button>
+          </div>
+
+          {/* Results Header */}
+          <div className="results-header">
+            <span className="results-count">
+              {loading ? (
+                "Loading..."
+              ) : (
+                activeTab === "engineers" 
+                  ? `${filteredEngineers.length} engineer${filteredEngineers.length !== 1 ? 's' : ''} found` 
+                  : `${filteredProjects.length} project${filteredProjects.length !== 1 ? 's' : ''} found`
+              )}
+            </span>
+          </div>
+
+          {/* Results Grid */}
+          <div className="results-grid">
+            {loading ? (
+              // Loading skeletons
+              Array(6).fill(0).map((_, i) => (
+                <div key={i} className={`${activeTab === "engineers" ? 'engineer-card' : 'project-card'} loading-skeleton`}>
+                  {activeTab === "engineers" ? (
+                    <>
+                      <div className="engineer-header">
+                        <div className="engineer-avatar" style={{ background: 'var(--neutral-300)' }}></div>
+                        <div className="engineer-info">
+                          <h4 style={{ height: '1.5rem', width: '120px', background: 'var(--neutral-300)', borderRadius: 'var(--radius-sm)' }}></h4>
+                          <p style={{ height: '1rem', width: '80px', background: 'var(--neutral-200)', borderRadius: 'var(--radius-sm)', marginTop: '0.5rem' }}></p>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="project-thumbnail" style={{ background: 'var(--neutral-300)' }}></div>
+                      <div className="project-content">
+                        <div style={{ height: '1.25rem', width: '60%', background: 'var(--neutral-300)', borderRadius: 'var(--radius-sm)' }}></div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              ))
+            ) : (
+              activeTab === "engineers" ? (
+                filteredEngineers.length > 0 ? (
+                  filteredEngineers.map(engineer => (
+                    <div 
+                      key={engineer.id} 
+                      className="engineer-card"
+                      onClick={() => navigate(`/profile/${engineer.id}`)}
+                    >
+                      <div className="engineer-header">
+                        <div className="engineer-avatar">
+                          {engineer.profileImage ? (
+                            <img src={engineer.profileImage} alt={engineer.name} />
+                          ) : (
+                            engineer.avatar
+                          )}
+                        </div>
+                        <div className="engineer-info">
+                          <h4>{engineer.name}</h4>
+                          <p>{engineer.role}</p>
+                        </div>
+                      </div>
+                      <p className="engineer-bio">{engineer.bio}</p>
+                      <div className="engineer-skills">
+                        {engineer.skills.slice(0, 4).map(skill => (
+                          <span key={skill} className="engineer-skill">{skill}</span>
+                        ))}
+                        {engineer.skills.length > 4 && (
+                          <span className="engineer-skill">+{engineer.skills.length - 4}</span>
+                        )}
+                      </div>
+                      <div className="engineer-meta">
+                        <span className="engineer-college">🎓 {engineer.college}</span>
+                        <span className="engineer-projects">📁 {engineer.projectsCount} projects</span>
+                      </div>
+                      {engineer.availability && (
+                        <div style={{ marginTop: '0.75rem' }}>
+                          <span className="availability-badge">{engineer.availability}</span>
+                        </div>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '3rem', color: 'var(--neutral-500)' }}>
+                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔍</div>
+                    <h3 style={{ marginBottom: '0.5rem' }}>No engineers found</h3>
+                    <p>Try adjusting your filters or search query</p>
+                  </div>
+                )
+              ) : (
+                filteredProjects.length > 0 ? (
+                  filteredProjects.map(project => (
+                    <div 
+                      key={project.id} 
+                      className="project-card"
+                      onClick={() => navigate(`/project/${project.id}`)}
+                    >
+                      <div 
+                        className="project-thumbnail"
+                        style={{ backgroundImage: `url(${project.thumbnail})` }}
+                      />
+                      <div className="project-content">
+                        <div className="project-header">
+                          <div className="project-creator-avatar">{project.creatorAvatar}</div>
+                          <span className="project-creator">{project.creator}</span>
+                          {project.featured && (
+                            <span className="featured-badge">✨ Featured</span>
+                          )}
+                        </div>
+                        <h3 className="project-title">{project.title}</h3>
+                        <p className="project-description">{project.description}</p>
+                        <div className="project-tech">
+                          {project.techStack?.slice(0, 3).map(tech => (
+                            <span key={tech} className="project-tech-tag">{tech}</span>
+                          ))}
+                          {project.techStack?.length > 3 && (
+                            <span className="project-tech-tag">+{project.techStack.length - 3}</span>
+                          )}
+                        </div>
+                        <div className="project-meta">
+                          <span className="project-status">
+                            <span className={`status-dot ${project.status === 'Ongoing' ? 'ongoing' : ''}`}></span>
+                            {project.status}
+                          </span>
+                          <span className="project-stats">
+                            {project.hasLiveDemo && "🌐 "}
+                            {project.hasGitHub && "⌨️ "}
+                            👁 {project.views.toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '3rem', color: 'var(--neutral-500)' }}>
+                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔍</div>
+                    <h3 style={{ marginBottom: '0.5rem' }}>No projects found</h3>
+                    <p>Try adjusting your filters or search query</p>
+                  </div>
+                )
+              )
+            )}
+          </div>
+
+          {/* Explore Categories (shown when no search and not loading) */}
+          {!searchQuery && !loading && (
+            <div className="explore-categories">
+              <div className="categories-title">
+                {activeTab === "engineers" ? "Popular Skills to Explore" : "Popular Domains to Explore"}
+              </div>
+              <div className="categories-grid">
+                {activeTab === "engineers" ? (
+                  popularSkills.map(skill => (
+                    <span 
+                      key={skill} 
+                      className="category-item"
+                      onClick={() => handleCategoryClick(skill)}
+                    >
+                      {skill}
+                    </span>
+                  ))
+                ) : (
+                  domains.map(domain => (
+                    <span 
+                      key={domain} 
+                      className="category-item"
+                      onClick={() => handleCategoryClick(domain)}
+                    >
+                      {domain}
+                    </span>
+                  ))
+                )}
+              </div>
             </div>
           )}
-        </div>
-
-        {/* Show More Button */}
-        {displayedProjects.length > 8 && (
-          <div className="show-more-container">
-            <button className="show-more-btn">Show More Projects ↓</button>
-          </div>
-        )}
+        </main>
       </div>
 
       {/* Footer */}
       <footer className="footer">
-        <div className="footer-grid">
-          <div>
-            <div className="footer-logo">tech<span>foliyo</span></div>
-            <p className="footer-desc">
-              Building bridges between engineers and recruiters through live project demonstrations.
-            </p>
-            <div className="footer-social">
-              <span className="social-link">Twitter</span>
-              <span className="social-link">GitHub</span>
-              <span className="social-link">LinkedIn</span>
-            </div>
-          </div>
-          <div className="footer-col">
-            <h4>Platform</h4>
-            <span className="footer-link">Features</span>
-            <span className="footer-link">For Whom</span>
-            <span className="footer-link">Pricing</span>
-          </div>
-          <div className="footer-col">
-            <h4>Students</h4>
-            <span className="footer-link">Create Portfolio</span>
-            <span className="footer-link">Login</span>
-            <span className="footer-link">Browse Projects</span>
-          </div>
-          <div className="footer-col">
-            <h4>Recruiters</h4>
-            <span className="footer-link">How It Works</span>
-            <span className="footer-link">Search Candidates</span>
-            <span className="footer-link">Contact Sales</span>
-          </div>
-          <div className="footer-col">
-            <h4>Company</h4>
-            <span className="footer-link">About</span>
-            <span className="footer-link">Contact</span>
-            <span className="footer-link">Privacy</span>
-          </div>
-        </div>
-        <div className="footer-bottom">
-          <span>© 2026 Techfoliyo. All rights reserved.</span>
-          <div className="footer-bottom-links">
-            <span>Privacy</span>
-            <span>Terms</span>
+        <div className="footer-content">
+          <div className="footer-tagline">
+            Built for people who build things. © {new Date().getFullYear()} techfoliyo
           </div>
         </div>
       </footer>

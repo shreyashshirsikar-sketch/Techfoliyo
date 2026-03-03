@@ -13,9 +13,11 @@ model User {
   email     String   @unique
   password  String
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   projects   Project[]
   userSkills UserSkill[]
+  likes      ProjectLike[]
 }
 
 model Project {
@@ -26,17 +28,35 @@ model Project {
   githubUrl   String?
   liveUrl     String?
   createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  // NEW
+  // Extended fields
   summary     String?
   difficulty  String?
   isPublished Boolean @default(false)
+  category    String? // For domain filtering
+  viewCount   Int     @default(0)
+  featured    Boolean @default(false) // For featured projects
+  thumbnail   String? // Project thumbnail image
 
   userId String
   user   User   @relation(fields: [userId], references: [id])
 
   sections      ProjectSection[]
   projectSkills ProjectSkill[]
+  likes         ProjectLike[]
+}
+
+model ProjectLike {
+  id        String   @id @default(uuid())
+  userId    String
+  projectId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, projectId])
 }
 
 model ProjectSection {
